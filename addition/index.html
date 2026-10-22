@@ -247,6 +247,14 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
 .avb[aria-pressed="true"] .avn{color:var(--ink)}
 .badge{position:absolute;top:-5px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:99px;background:var(--badge-bg);color:var(--badge-fg);font:800 .7rem/21px var(--font);text-align:center;transform:scale(0);transition:transform .35s var(--spring);box-shadow:0 0 0 2px var(--card)}
 .badge.on{transform:scale(1)}
+.avw{position:relative;display:inline-flex}
+.minus{position:absolute;top:-2px;left:0;z-index:2;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--card);color:var(--ink);border:1px solid var(--line2);box-shadow:var(--shadow);font:800 1rem/1 var(--font);transform:scale(0);pointer-events:none;transition:transform .35s var(--spring),background .2s,color .2s}
+.minus::before{content:"";position:absolute;inset:-9px}
+.minus.on{transform:scale(1);pointer-events:auto}
+.minus:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+.af{display:flex;justify-content:flex-end;margin-top:4px}
+.clr{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:99px;background:var(--sunk);color:var(--mute);font-size:.8rem;font-weight:650;animation:pop .45s var(--spring) both;transition:color .2s,background .2s}
+.clr:hover{color:var(--danger)}
 .avb.all .av{background:var(--sunk);color:var(--ink);opacity:1;filter:none}
 .avb.all[aria-pressed="true"] .av{background:var(--lime);color:var(--lime-ink);box-shadow:none}
 
@@ -421,6 +429,7 @@ var IC={
   spark:'<svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg>',
   share:'<svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>',
   trash:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  undo:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>',
   x:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   check:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
   warn:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5c1a10" stroke-width="3" stroke-linecap="round"><path d="M12 7v6M12 17v.5"/></svg>',
@@ -721,8 +730,8 @@ $('plist').addEventListener('click',function(e){
 /* ---------- Étape 4 : attribution ---------- */
 function cardHTML(it,i){
   return '<article class="acard stg" style="--i:'+Math.min(i+2,10)+'" data-id="'+it.id+'"><div class="ah"><span class="dot2" aria-hidden="true">'+IC.check+'</span><div class="ah-t"><b class="an">'+(it.q>1?it.q+'× ':'')+esc(it.n||'Article')+'</b><span class="as"></span></div><b class="ap">'+eur(it.p)+'</b></div>'+
-    '<div class="avs" role="group" aria-label="Qui a pris '+esc(it.n||'cet article')+'">'+S.people.map(function(p){return '<button class="avb" type="button" data-p="'+p.id+'" aria-pressed="false" aria-label="'+esc(p.n)+'"><span class="av" style="'+avStyle(p)+'" aria-hidden="true">'+esc(ini(p.n))+'<i class="badge"></i></span><span class="avn" aria-hidden="true">'+esc(p.n)+'</span></button>'}).join('')+
-    '<button class="avb all" type="button" data-all aria-pressed="false"><span class="av" aria-hidden="true">'+IC.users+'</span><span class="avn">Tous</span></button></div></article>';
+    '<div class="avs" role="group" aria-label="Qui a pris '+esc(it.n||'cet article')+'">'+S.people.map(function(p){return '<span class="avw"><button class="avb" type="button" data-p="'+p.id+'" aria-pressed="false" aria-label="'+esc(p.n)+'"><span class="av" style="'+avStyle(p)+'" aria-hidden="true">'+esc(ini(p.n))+'<i class="badge"></i></span><span class="avn" aria-hidden="true">'+esc(p.n)+'</span></button><button class="minus" type="button" data-m="'+p.id+'" tabindex="-1" aria-label="Retirer une part à '+esc(p.n)+'">−</button></span>'}).join('')+
+    '<button class="avb all" type="button" data-all aria-pressed="false"><span class="av" aria-hidden="true">'+IC.users+'</span><span class="avn">Tous</span></button></div><div class="af" hidden><button class="clr" type="button" data-clr>'+IC.undo+'Tout désélectionner</button></div></article>';
 }
 function renderAssign(){
   S.items=S.items.filter(function(i){return i.n.trim()||i.p});
@@ -742,10 +751,12 @@ function syncCard(card){
     var p=S.people.filter(function(x){return x.id===+b.dataset.p})[0];
     b.setAttribute('aria-label',(p?p.n:'')+(k>1?', '+k+' parts':''));
     bg.textContent=k>1?'×'+k:'';bg.classList.toggle('on',k>1);
+    var m=b.nextElementSibling;m.classList.toggle('on',k>0);m.tabIndex=k>0?0:-1;
   });
+  var af=card.querySelector('.af');if(af.hidden!==!(t>0)){af.hidden=!(t>0);if(t>0)retrigger(af.firstChild,'clr')}
   var all=card.querySelector('[data-all]');all.setAttribute('aria-pressed',String(who.length===S.people.length&&S.people.length>0));
   var s;
-  if(!t)s=it.q>1?'Touche une fois par unité prise':'Qui l’a pris ?';
+  if(!t)s=it.q>1?'Touche une fois par unité prise, − pour corriger':'Qui l’a pris ?';
   else if(who.length===1)s='Pour '+who[0].n;
   else if(who.every(function(p){return a[p.id]===a[who[0].id]}))s='Partagé à '+who.length+' · '+eur(it.p/who.length)+' chacun';
   else s=who.map(function(p){return p.n+' '+a[p.id]+'/'+t}).join(' · ');
@@ -769,13 +780,20 @@ function fly(a,b,col,done){
   d.animate([{transform:'translate(0,0) scale(.5)',opacity:0},{transform:'translate('+dx*.35+'px,'+(dy*.35-80)+'px) scale(1.25)',opacity:1,offset:.4},{transform:'translate('+dx+'px,'+dy+'px) scale(.45)',opacity:.9}],{duration:680,easing:'cubic-bezier(.45,0,.25,1)'}).onfinish=function(){d.remove();done&&done()};
 }
 $('assign').addEventListener('click',function(e){
-  var b=e.target.closest('.avb');if(!b)return;var card=b.closest('.acard'),it=byId(+card.dataset.id);if(!it)return;
+  var b=e.target.closest('.avb,.minus,.clr');if(!b)return;var card=b.closest('.acard'),it=byId(+card.dataset.id);if(!it)return;
   var a=S.A[it.id]=S.A[it.id]||{},gained=[];
+  if(b.hasAttribute('data-clr')||b.hasAttribute('data-m')){
+    if(b.hasAttribute('data-clr'))S.A[it.id]={};else{var mp=+b.dataset.m;a[mp]=Math.max(0,(a[mp]||0)-1)}
+    var av=b.hasAttribute('data-m')?b.previousElementSibling:null;if(av)retrigger(av,'bump');
+    hap();syncCard(card);syncProgress();chrome();save();syncSum();
+    if(b.hasAttribute('data-clr'))toast('Article désélectionné');else if(!(a[+b.dataset.m]>0))av.focus();
+    return;
+  }
   if(b.hasAttribute('data-all')){
     var allOn=S.people.every(function(p){return (a[p.id]||0)>0});
     S.people.forEach(function(p){if(!allOn&&!(a[p.id]>0))gained.push(p);a[p.id]=allOn?0:1});
   }else{
-    var pid=+b.dataset.p,k=a[pid]||0,n=it.q>1?(k>=it.q?0:k+1):(k?0:1);a[pid]=n;
+    var pid=+b.dataset.p,k=a[pid]||0,n=it.q>1?Math.min(it.q,k+1):(k?0:1);if(n===k){toast('Les '+it.q+' unités sont prises. Utilise − pour en retirer.');retrigger(b,'bump');return}a[pid]=n;
     if(n>k)gained=S.people.filter(function(p){return p.id===pid});
   }
   retrigger(b,'bump');hap();syncCard(card);syncProgress();chrome();save();
