@@ -386,7 +386,7 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
 </section>
 
 <section class="step" id="st3" aria-labelledby="t3" hidden>
-  <header class="sh stg" style="--i:0"><span class="kicker">Étape 4 sur 5</span><h2 id="t3" tabindex="-1">Qui a pris quoi ?</h2><p>Touche les personnes pour chaque article. Plusieurs personnes, c’est un article partagé.</p></header>
+  <header class="sh stg" style="--i:0"><span class="kicker">Étape 4 sur 5</span><h2 id="t3" tabindex="-1">Qui a pris quoi ?</h2><p>Touche une personne pour lui donner une part, encore pour une part de plus. Le bouton − retire une part.</p></header>
   <div class="stg" style="--i:1"><div class="ahead"><span>Articles attribués</span><b id="acount">0 / 0</b></div><div class="abar" id="abar"><i></i></div></div>
   <div class="acards" id="assign"></div>
 </section>
@@ -756,7 +756,7 @@ function syncCard(card){
   var af=card.querySelector('.af');if(af.hidden!==!(t>0)){af.hidden=!(t>0);if(t>0)retrigger(af.firstChild,'clr')}
   var all=card.querySelector('[data-all]');all.setAttribute('aria-pressed',String(who.length===S.people.length&&S.people.length>0));
   var s;
-  if(!t)s=it.q>1?'Touche une fois par unité prise, − pour corriger':'Qui l’a pris ?';
+  if(!t)s=it.q>1?'Touche une fois par unité prise, − pour corriger':'Qui l’a pris ? Touche 2 fois pour 2 parts';
   else if(who.length===1)s='Pour '+who[0].n;
   else if(who.every(function(p){return a[p.id]===a[who[0].id]}))s='Partagé à '+who.length+' · '+eur(it.p/who.length)+' chacun';
   else s=who.map(function(p){return p.n+' '+a[p.id]+'/'+t}).join(' · ');
@@ -793,7 +793,7 @@ $('assign').addEventListener('click',function(e){
     var allOn=S.people.every(function(p){return (a[p.id]||0)>0});
     S.people.forEach(function(p){if(!allOn&&!(a[p.id]>0))gained.push(p);a[p.id]=allOn?0:1});
   }else{
-    var pid=+b.dataset.p,k=a[pid]||0,n=it.q>1?Math.min(it.q,k+1):(k?0:1);if(n===k){toast('Les '+it.q+' unités sont prises. Utilise − pour en retirer.');retrigger(b,'bump');return}a[pid]=n;
+    var pid=+b.dataset.p,k=a[pid]||0,n=Math.min(99,k+1);a[pid]=n;
     if(n>k)gained=S.people.filter(function(p){return p.id===pid});
   }
   retrigger(b,'bump');hap();syncCard(card);syncProgress();chrome();save();
