@@ -556,13 +556,19 @@ var S=load();
 function byId(id){for(var i=0;i<S.items.length;i++)if(S.items[i].id===id)return S.items[i];return null}
 function itemsSum(){return S.items.reduce(function(a,i){return a+i.p},0)}
 function parts(it){var a=S.A[it.id]||{},t=0;S.people.forEach(function(p){t+=a[p.id]||0});return t}
-function unassigned(){return S.items.filter(function(it){return !parts(it)}).length}
+/* Article en plusieurs unités : chaque toucher compte une unité (prix ÷ quantité).
+   Il reste « à attribuer » tant que toutes les unités ne sont pas prises, sauf si toute la table est cochée : on partage alors au prorata. */
+function allSel(it){var a=S.A[it.id]||{};return S.people.length>0&&S.people.every(function(p){return (a[p.id]||0)>0})}
+function partial(it){var t=parts(it);return it.q>1&&t>0&&t<it.q&&!allSel(it)}
+function complete(it){return parts(it)>0&&!partial(it)}
+function den(it){return partial(it)?it.q:parts(it)}
+function unassigned(){return S.items.filter(function(it){return !complete(it)}).length}
 
 function calc(){
   var P=S.people,sub={},det={},unas=[];
   P.forEach(function(p){sub[p.id]=0;det[p.id]=[]});
   S.items.forEach(function(it){
-    var a=S.A[it.id]||{},t=parts(it);if(!t){unas.push(it);return}
+    var a=S.A[it.id]||{},t=den(it);if(!complete(it))unas.push(it);if(!t)return;
     P.forEach(function(p){var k=a[p.id]||0;if(k){var v=it.p*k/t;sub[p.id]+=v;det[p.id].push({it:it,k:k,t:t,v:v})}});
   });
   var ex=num(S.extra),base=0,raw={},exs={};
@@ -814,7 +820,7 @@ function renderAssign(){
 function syncCard(card){
   var it=byId(+card.dataset.id);if(!it)return;var a=S.A[it.id]||{},t=parts(it);
   var who=S.people.filter(function(p){return (a[p.id]||0)>0});
-  card.classList.toggle('done',t>0);
+  card.classList.toggle('done',complete(it));
   [].forEach.call(card.querySelectorAll('.avb[data-p]'),function(b){
     var k=a[+b.dataset.p]||0,bg=b.querySelector('.badge');
     b.setAttribute('aria-pressed',String(k>0));
@@ -827,8 +833,10 @@ function syncCard(card){
   var all=card.querySelector('[data-all]');all.setAttribute('aria-pressed',String(who.length===S.people.length&&S.people.length>0));
   var s;
   if(!t)s=it.q>1?'Touche une fois par unité prise, − pour corriger':'Qui l’a pris ? Touche 2 fois pour 2 parts';
+  else if(partial(it))s=who.map(function(p){return p.n+' '+a[p.id]}).join(' · ')+' · Reste '+(it.q-t)+' sur '+it.q+' ('+eur((it.q-t)*it.p/it.q)+')';
   else if(who.length===1)s='Pour '+who[0].n;
   else if(who.every(function(p){return a[p.id]===a[who[0].id]}))s='Partagé à '+who.length+' · '+eur(it.p/who.length)+' chacun';
+  else if(it.q>1&&t===it.q)s=who.map(function(p){return p.n+' '+a[p.id]}).join(' · ');
   else s=who.map(function(p){return p.n+' '+a[p.id]+'/'+t}).join(' · ');
   card.querySelector('.as').textContent=s;
 }
