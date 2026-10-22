@@ -146,6 +146,9 @@ h1 .mk::before{content:"";position:absolute;inset:.1em -.08em -.02em;background:
 .pbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .pbtn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:99px;background:var(--lime);color:var(--lime-ink);font-size:.85rem;font-weight:750;transition:transform .2s var(--spring)}
 .pbtn:active{transform:scale(.95)}
+.pbtn{text-decoration:none}
+.pbtn[aria-disabled="true"]{background:var(--sunk);color:var(--mute);pointer-events:none}
+.way .hint{margin-top:8px;font-size:.78rem}
 .pbtn.s{background:var(--sunk);color:var(--ink)}
 .prompt{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--paper);color:var(--paper-ink);font:500 .78rem/1.6 var(--mono);white-space:pre-wrap;user-select:all;-webkit-user-select:all;animation:rise .4s var(--ease) both}
 .opt{display:flex;flex-direction:column;gap:8px;margin-top:30px}
@@ -353,7 +356,7 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
   <div class="hero">
     <span class="eyebrow"><span class="dot"></span>Ticket de caisse → parts au centime</span>
     <h1 id="t0" tabindex="-1"><span class="w" style="--d:0">Partagez</span> <span class="w" style="--d:1">l’addition</span> <span class="w" style="--d:2">sans</span> <span class="w mk" style="--d:3">calcul.</span></h1>
-    <p class="lede">Prends ton ticket en photo et fais-en extraire le texte, par ChatGPT ou par ton iPhone. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
+    <p class="lede">Prends ton ticket en photo et fais-en extraire le texte, par ton iPhone ou par l’IA de ton choix. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
   </div>
   <div class="rwrap print" id="rwrap">
     <div class="receipt" id="rcpt">
@@ -373,12 +376,15 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
   </div>
   <div class="how">
     <span class="how-t">Comment récupérer le texte du ticket</span>
-    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><div class="wb"><b>Avec ChatGPT ou une autre IA</b>
+    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2.5"/><rect x="13" y="3" width="8" height="8" rx="2.5"/><rect x="3" y="13" width="8" height="8" rx="2.5"/><path d="M17 13v8M13 17h8"/></svg></span><div class="wb"><b>Avec le raccourci iPhone, sans copier-coller</b>
+      <ol><li>Installe le raccourci SplitTheBill, une seule fois.</li><li>Au restaurant, lance-le et prends le ticket en photo.</li><li>Apple Intelligence lit le ticket et SplitTheBill s’ouvre avec les articles.</li></ol>
+      <div class="pbtns"><a class="pbtn" id="shortcut" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter à Raccourcis</a></div>
+      <p class="hint">Nécessite un iPhone compatible Apple Intelligence (iPhone 15 Pro ou plus récent).</p></div></div>
+    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><div class="wb"><b>Avec l’IA de ton choix</b>
+      <p>ChatGPT, Claude, Gemini, Le Chat… n’importe quelle IA qui lit les photos.</p>
       <ol><li>Copie notre prompt.</li><li>Envoie-le à l’IA avec la photo du ticket.</li><li>Copie sa réponse et colle-la dans le ticket ci-dessus.</li></ol>
       <div class="pbtns"><button class="pbtn" id="cprompt" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Copier le prompt</button><button class="pbtn s" id="sprompt" type="button" aria-expanded="false" aria-controls="prompt">Voir le prompt</button></div>
       <div class="prompt" id="prompt" hidden></div></div></div>
-    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6l1.5-2h5L16 6"/><circle cx="12" cy="13" r="3.5"/></svg></span><div class="wb"><b>Avec l’iPhone, sans IA</b>
-      <ol><li>Ouvre la photo du ticket dans Photos.</li><li>Fais un appui long sur le texte, puis « Tout sélectionner » et « Copier ».</li><li>Colle-le dans le ticket ci-dessus.</li></ol></div></div>
   </div>
   <div class="opt">
     <span class="opt-l" id="pml">Sur ce ticket, les prix sont</span>
@@ -656,14 +662,16 @@ $('demo').addEventListener('click',function(){
   },70);
 });
 
+var SHORTCUT_URL='https://www.icloud.com/shortcuts/39c498cb6e534b4e8eb4d6357a50891b';/* lien iCloud du raccourci : https://www.icloud.com/shortcuts/... */
+(function(){var a=$('shortcut');if(SHORTCUT_URL){a.href=SHORTCUT_URL}else{a.removeAttribute('href');a.setAttribute('aria-disabled','true');a.lastChild.textContent='Bientôt disponible'}})();
 var PROMPT='Lis ce ticket de caisse. Réponds uniquement avec la liste des articles, une ligne par article, au format : quantité nom prix_total_de_la_ligne (exemple : 2 Spritz 17,00). Mets les remises en négatif. Ajoute à la fin une ligne TOTAL montant. Pas de titre, pas de commentaire, pas de mise en forme.';
 $('prompt').textContent=PROMPT;
 function showPrompt(on){$('prompt').hidden=!on;$('sprompt').setAttribute('aria-expanded',String(on));$('sprompt').textContent=on?'Masquer le prompt':'Voir le prompt'}
 $('sprompt').addEventListener('click',function(){showPrompt($('prompt').hidden)});
 $('cprompt').addEventListener('click',function(){
   hap();
-  function fb(){showPrompt(true);var s=window.getSelection(),rg=document.createRange();rg.selectNodeContents($('prompt'));s.removeAllRanges();s.addRange(rg);var ok=false;try{ok=document.execCommand('copy')}catch(e){}toast(ok?'Prompt copié. Colle-le dans ChatGPT avec la photo.':'Sélectionne le prompt ci-dessous pour le copier.')}
-  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PROMPT).then(function(){toast('Prompt copié. Colle-le dans ChatGPT avec la photo.')},fb);else fb()}catch(e){fb()}
+  function fb(){showPrompt(true);var s=window.getSelection(),rg=document.createRange();rg.selectNodeContents($('prompt'));s.removeAllRanges();s.addRange(rg);var ok=false;try{ok=document.execCommand('copy')}catch(e){}toast(ok?'Prompt copié. Colle-le dans ton IA avec la photo.':'Sélectionne le prompt ci-dessous pour le copier.')}
+  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PROMPT).then(function(){toast('Prompt copié. Colle-le dans ton IA avec la photo.')},fb);else fb()}catch(e){fb()}
 });
 
 /* ---------- Étape 2 : articles ---------- */
