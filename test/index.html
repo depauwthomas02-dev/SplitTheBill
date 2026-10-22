@@ -97,14 +97,18 @@ svg{flex:none}
 .hero{padding-block:22px 26px}
 .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 13px 6px 9px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:.78rem;font-weight:650;color:var(--mute);animation:rise .7s var(--ease) both}
 .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 var(--glow);animation:pulse 2.2s infinite}
-h1{font:900 clamp(2.7rem,12.5vw,4.4rem)/.9 var(--display);letter-spacing:-.045em;word-spacing:.04em;margin:18px 0 18px;text-wrap:balance;outline:none}
+h1{margin-bottom:22px!important;font:900 clamp(2.6rem,12vw,4.3rem)/.9 var(--display);letter-spacing:-.045em;word-spacing:.04em;margin:18px 0 18px;text-wrap:balance;outline:none}
 h1 .w{display:inline-block;animation:word 1s var(--ease) both;animation-delay:calc(var(--d) * 90ms + 120ms)}
 @keyframes word{from{opacity:0;transform:translateY(.45em) rotate(4deg);filter:blur(10px)}}
 h1 .mk{position:relative;z-index:0;animation:word 1s var(--ease) both,mkc .3s 1.15s forwards;animation-delay:calc(var(--d) * 90ms + 120ms),1.15s}
 h1 .mk::before{content:"";position:absolute;inset:.1em -.08em -.02em;background:var(--lime);border-radius:.14em;z-index:-1;transform:scaleX(0) skewX(-6deg);transform-origin:left;animation:sweep .7s .95s var(--ease) forwards}
 @keyframes sweep{to{transform:scaleX(1) skewX(-6deg)}}
 @keyframes mkc{to{color:var(--lime-ink)}}
-.lede strong{color:var(--ink);font-weight:700}
+.quip{margin:0 0 22px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;animation:quip .8s 1.35s var(--spring) both}
+.quip blockquote{position:relative;margin:0;padding:12px 18px;background:var(--forest);color:var(--lime);border-radius:22px 22px 22px 6px;font:800 italic clamp(1.15rem,5.2vw,1.45rem)/1.2 var(--display);letter-spacing:-.025em;transform:rotate(-2.5deg);box-shadow:0 0 0 1px rgba(159,232,112,.18),0 14px 30px -14px rgba(22,51,0,.55)}
+.quip blockquote::after{content:"";position:absolute;left:-1px;bottom:-9px;width:18px;height:14px;background:var(--forest);clip-path:polygon(0 0,100% 0,0 100%)}
+.quip figcaption{margin:6px 0 0 10px;font:500 .72rem/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+@keyframes quip{from{opacity:0;transform:translateY(14px) scale(.85) rotate(4deg);transform-origin:left bottom}}
 .lede{margin:0;max-width:36ch;color:var(--mute);font-size:1.06rem;animation:rise .8s .55s var(--ease) both}
 
 .rwrap{position:relative;filter:drop-shadow(0 26px 34px rgba(22,51,0,.20)) drop-shadow(0 2px 3px rgba(0,0,0,.08))}
@@ -357,8 +361,9 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
 <section class="step in-r" id="st0" aria-labelledby="t0">
   <div class="hero">
     <span class="eyebrow"><span class="dot"></span>Ticket de caisse → chacun paie ce qu’il a pris</span>
-    <h1 id="t0" tabindex="-1"><span class="w" style="--d:0">«&nbsp;J’ai</span> <span class="w" style="--d:1">pris</span> <span class="w" style="--d:2">qu’une</span> <span class="w mk" style="--d:3">salade.&nbsp;»</span></h1>
-    <p class="lede"><strong>Les chiffres répondront à ta place.</strong> Prends ton ticket en photo et fais-en extraire le texte, par ton iPhone ou par l’IA de ton choix. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
+    <h1 id="t0" tabindex="-1"><span class="w" style="--d:0">L’addition,</span> <span class="w" style="--d:1">même</span> <span class="w" style="--d:2">pour</span> <span class="w" style="--d:3">les</span> <span class="w mk" style="--d:4">radins.</span></h1>
+    <figure class="quip"><blockquote>«&nbsp;J’ai bu que 2&nbsp;bières, moi.&nbsp;»</blockquote><figcaption>Un pote, au moment de payer</figcaption></figure>
+    <p class="lede">Prends ton ticket en photo et fais-en extraire le texte, par ton iPhone ou par l’IA de ton choix. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
   </div>
   <div class="rwrap print" id="rwrap">
     <div class="receipt" id="rcpt">
