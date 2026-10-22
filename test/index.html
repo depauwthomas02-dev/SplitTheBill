@@ -97,13 +97,14 @@ svg{flex:none}
 .hero{padding-block:22px 26px}
 .eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 13px 6px 9px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:.78rem;font-weight:650;color:var(--mute);animation:rise .7s var(--ease) both}
 .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 0 var(--glow);animation:pulse 2.2s infinite}
-h1{font:900 clamp(3rem,14vw,4.75rem)/.88 var(--display);letter-spacing:-.045em;word-spacing:.04em;margin:18px 0 18px;text-wrap:balance;outline:none}
+h1{font:900 clamp(2.7rem,12.5vw,4.4rem)/.9 var(--display);letter-spacing:-.045em;word-spacing:.04em;margin:18px 0 18px;text-wrap:balance;outline:none}
 h1 .w{display:inline-block;animation:word 1s var(--ease) both;animation-delay:calc(var(--d) * 90ms + 120ms)}
 @keyframes word{from{opacity:0;transform:translateY(.45em) rotate(4deg);filter:blur(10px)}}
 h1 .mk{position:relative;z-index:0;animation:word 1s var(--ease) both,mkc .3s 1.15s forwards;animation-delay:calc(var(--d) * 90ms + 120ms),1.15s}
 h1 .mk::before{content:"";position:absolute;inset:.1em -.08em -.02em;background:var(--lime);border-radius:.14em;z-index:-1;transform:scaleX(0) skewX(-6deg);transform-origin:left;animation:sweep .7s .95s var(--ease) forwards}
 @keyframes sweep{to{transform:scaleX(1) skewX(-6deg)}}
 @keyframes mkc{to{color:var(--lime-ink)}}
+.lede strong{color:var(--ink);font-weight:700}
 .lede{margin:0;max-width:36ch;color:var(--mute);font-size:1.06rem;animation:rise .8s .55s var(--ease) both}
 
 .rwrap{position:relative;filter:drop-shadow(0 26px 34px rgba(22,51,0,.20)) drop-shadow(0 2px 3px rgba(0,0,0,.08))}
@@ -114,6 +115,7 @@ h1 .mk::before{content:"";position:absolute;inset:.1em -.08em -.02em;background:
   mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/16px 100%}
 .rc-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px 14px;font:500 .7rem/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--paper-mute);border-bottom:1.5px dashed var(--paper-line)}
 .rc-head b{color:var(--paper-ink);font-weight:700}
+.rc-head span{white-space:nowrap}
 .rc-body{position:relative;padding:14px 20px 10px;overflow:hidden}
 #raw{display:block;width:100%;min-height:236px;border:0;background:transparent;color:var(--paper-ink);font:500 .9rem/1.8 var(--mono);resize:none;padding:0;outline:none}
 #raw::placeholder{color:var(--paper-mute);opacity:1}
@@ -340,7 +342,7 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .confetti{position:fixed;inset:0;width:100%;height:100%;z-index:55;pointer-events:none}
 
-@media (max-width:380px){.brand span:last-child{display:none}.fields{grid-template-columns:1fr}.pc-d ul{padding-left:16px}}
+@media (max-width:380px){.rc-head{letter-spacing:.06em;padding-inline:16px}.brand span:last-child{display:none}.fields{grid-template-columns:1fr}.pc-d ul{padding-left:16px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0s!important;scroll-behavior:auto!important}}
 </style></head><body>
 <div class="amb" aria-hidden="true"><i></i><i></i></div>
@@ -354,9 +356,9 @@ h2{font:850 clamp(2.1rem,9vw,2.9rem)/.95 var(--display);letter-spacing:-.035em;m
 <main>
 <section class="step in-r" id="st0" aria-labelledby="t0">
   <div class="hero">
-    <span class="eyebrow"><span class="dot"></span>Ticket de caisse → parts au centime</span>
-    <h1 id="t0" tabindex="-1"><span class="w" style="--d:0">Partagez</span> <span class="w" style="--d:1">l’addition</span> <span class="w" style="--d:2">sans</span> <span class="w mk" style="--d:3">calcul.</span></h1>
-    <p class="lede">Prends ton ticket en photo et fais-en extraire le texte, par ton iPhone ou par l’IA de ton choix. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
+    <span class="eyebrow"><span class="dot"></span>Ticket de caisse → chacun paie ce qu’il a pris</span>
+    <h1 id="t0" tabindex="-1"><span class="w" style="--d:0">«&nbsp;J’ai</span> <span class="w" style="--d:1">pris</span> <span class="w" style="--d:2">qu’une</span> <span class="w mk" style="--d:3">salade.&nbsp;»</span></h1>
+    <p class="lede"><strong>Les chiffres répondront à ta place.</strong> Prends ton ticket en photo et fais-en extraire le texte, par ton iPhone ou par l’IA de ton choix. Colle-le ici : on repère les articles, tu dis qui a pris quoi, chacun reçoit sa part exacte.</p>
   </div>
   <div class="rwrap print" id="rwrap">
     <div class="receipt" id="rcpt">
