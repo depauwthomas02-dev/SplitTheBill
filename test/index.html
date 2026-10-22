@@ -58,7 +58,8 @@ svg{flex:none}
 .app{position:relative;z-index:1;width:100%;max-width:calc(var(--w) + 32px);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(170px + env(safe-area-inset-bottom,0px))}
 
 /* En-tête */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:14px;padding-block:12px;background:linear-gradient(var(--bg) 70%,transparent)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:14px;padding-block:12px;isolation:isolate}
+.top::before{content:"";position:absolute;z-index:-1;top:0;bottom:-14px;left:calc(50% - 50vw);right:calc(50% - 50vw);background:linear-gradient(color-mix(in srgb,var(--bg) 88%,transparent) 72%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask:linear-gradient(#000 72%,transparent);mask:linear-gradient(#000 72%,transparent)}
 .brand{display:flex;align-items:center;gap:10px;font:850 1.1rem/1 var(--display);letter-spacing:-.04em}
 .logo{width:36px;height:36px;border-radius:11px;background:var(--lime);color:var(--forest);display:grid;place-items:center;box-shadow:0 6px 18px -6px var(--glow)}
 .prog{flex:1;display:flex;gap:5px;min-width:0}
