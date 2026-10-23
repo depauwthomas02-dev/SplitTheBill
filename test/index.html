@@ -97,14 +97,37 @@ svg{flex:none}
 .shake{animation:shake .45s}
 
 /* Étape 1 : ticket */
-.hero{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:0;padding-block:18px 34px}
+.hero{position:relative;z-index:0;padding-block:16px 26px;transition:height .8s var(--ease)}
+.hero.ball{overflow:visible}
 #st0>:not(.hero){position:relative;z-index:1}
+.q{margin:0 0 14px;font:400 1.55rem/1.15 var(--display);letter-spacing:.01em;text-transform:uppercase;text-wrap:balance}
+.tile{display:flex;align-items:center;gap:14px;width:100%;margin:0 0 10px;padding:14px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);transition:transform .2s var(--spring),border-color .2s}
+.tile:active{transform:scale(.98)}
+.tile.rec{border-color:var(--lime);box-shadow:0 0 0 3px var(--glow),var(--shadow)}
+.tile .em{width:48px;height:48px;flex:none;border-radius:14px;display:grid;place-items:center;background:var(--sunk);color:var(--lime)}
+.tile .tt{flex:1;min-width:0}
+.tile b{display:block;font-size:1rem;font-weight:720}
+.tile .tt>span{display:block;margin-top:2px;font-size:.82rem;line-height:1.35;color:var(--mute)}
+.tile .tg{color:var(--mute)}
+.tag2{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--lime);color:var(--lime-ink);font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
+.curious{margin:14px 0 0;text-align:center;font-size:.88rem;color:var(--mute)}
+.curious b{color:var(--ink)}
+.lnk{color:var(--mute);text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.v0{animation:rise .55s var(--ease) both}
+.backm{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 10px;margin-bottom:16px;border-radius:99px;background:var(--sunk);font-size:.85rem;font-weight:650}
+.stp{display:flex;gap:14px;padding:14px;margin-bottom:10px;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.stp .nb{width:30px;height:30px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--forest);color:var(--soft);font:400 1rem/1 var(--display)}
+.sb2{flex:1;min-width:0}
+.sb2 b{display:block;font-weight:720;line-height:1.3}
+.sb2 p{margin:3px 0 0;font-size:.86rem;color:var(--mute)}
+.hint2{margin:4px 0 0;font-size:.8rem;color:var(--mute);text-align:center}
+#work{margin-top:6px}
 /* Ticket d'accueil froissé en boule (WebGL) quand on descend, redéplié quand on remonte */
-.hero canvas.crumple{position:absolute;left:0;top:-40px;width:100%;height:calc(100% + 80px);z-index:3;pointer-events:none}
+.hero canvas.crumple{position:absolute;left:0;top:-40px;width:100%;height:600px;z-index:3;pointer-events:none}
 .bshadow{position:absolute;width:120px;height:26px;margin:-13px 0 0 -60px;border-radius:50%;background:radial-gradient(closest-side,rgba(58,15,18,.32),transparent);opacity:0;pointer-events:none;z-index:2}
 .tkw{transition:opacity .45s,transform .45s var(--ease)}
 .hero.gone .tkw{opacity:0;transform:scale(.4) rotate(-20deg)}
-.tk{position:relative;margin:6px 10px 0;padding:24px 22px 22px;background:var(--paper);color:var(--paper-ink);transform:rotate(-1.6deg);filter:drop-shadow(0 22px 26px rgba(58,15,18,.22)) drop-shadow(0 2px 2px rgba(0,0,0,.06));font:400 .84rem/1.55 var(--mono);animation:tkprint 1.3s .15s var(--ease) both}
+.tk{position:relative;margin:6px 14px 0;padding:18px 18px 16px;background:var(--paper);color:var(--paper-ink);transform:rotate(-1.6deg);filter:drop-shadow(0 22px 26px rgba(58,15,18,.22)) drop-shadow(0 2px 2px rgba(0,0,0,.06));font:400 .84rem/1.55 var(--mono);animation:tkprint 1.3s .15s var(--ease) both}
 @keyframes tkprint{from{clip-path:inset(-20px -20px 100% -20px);transform:rotate(-1.6deg) translateY(-30px)}to{clip-path:inset(-20px -20px -20px -20px)}}
 .tk::before,.tk::after{content:"";position:absolute;left:0;right:0;height:10px;background:var(--paper)}
 .tk::before{top:-9px;-webkit-mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/14px 100%;mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/14px 100%}
@@ -112,7 +135,7 @@ svg{flex:none}
 .tk .ctr{text-align:center}
 .tk .sm{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
 .tk hr{border:0;border-top:1.5px dashed var(--paper-line);margin:10px 0}
-.tk h1{margin:8px 0 4px;font:400 clamp(2.4rem,12vw,3.2rem)/1.14 var(--display);letter-spacing:.005em;text-transform:uppercase;text-align:center;text-wrap:balance;outline:none}
+.tk h1{margin:8px 0 6px;font:400 clamp(2rem,9.6vw,2.6rem)/1.14 var(--display);letter-spacing:.005em;text-transform:uppercase;text-align:center;text-wrap:balance;outline:none}
 .tk h1 em{font-style:normal;color:var(--lime)}
 .tk .row{display:flex;gap:6px}
 .tk .row span:nth-child(2){flex:1;overflow:hidden;white-space:nowrap}
@@ -120,12 +143,10 @@ svg{flex:none}
 .tk .tot{font-weight:700;font-size:.95rem}
 .tk .l{animation:tkln .01s both;animation-delay:calc(1.05s + var(--k) * .15s)}
 @keyframes tkln{from{opacity:0}}
-.tk .pen{margin:10px 0 4px 2px;font:700 1.55rem/1.05 var(--hand);color:var(--pen);transform:rotate(-3deg);animation:pen .7s 2.6s ease both}
+.tk .pen{margin:4px 0 2px 2px;font:700 1.35rem/1.05 var(--hand);color:var(--pen);transform:rotate(-3deg);animation:pen .7s 2.6s ease both}
 .tk .pen small{display:block;margin:3px 8px 0 0;font-size:1.05rem;text-align:right}
 @keyframes pen{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 -5% 0 0)}}
 .tk .bc{height:34px;margin:12px 16px 4px;background:repeating-linear-gradient(90deg,var(--paper-ink) 0 2px,transparent 2px 4px,var(--paper-ink) 4px 5px,transparent 5px 8px,var(--paper-ink) 8px 11px,transparent 11px 12px)}
-.paste-l{display:block;margin:-22px 0 0;padding:26px 0 10px;background:linear-gradient(transparent,var(--bg) 40%);font:400 1.15rem/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
-.paste-l small{font:400 .82rem var(--font);text-transform:none;letter-spacing:0;color:var(--mute);margin-left:6px}
 .rwrap{position:relative;filter:drop-shadow(0 26px 34px rgba(58,15,18,.20)) drop-shadow(0 2px 3px rgba(0,0,0,.08))}
 .rwrap.print{animation:print 1.15s 1.2s var(--ease) both}
 @keyframes print{from{clip-path:inset(-60px -60px 100% -60px);transform:translateY(-16px)}to{clip-path:inset(-60px -60px -60px -60px);transform:none}}
@@ -155,24 +176,16 @@ svg{flex:none}
 .rcres b{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 6px;border-radius:99px;background:#3a0f12;color:#ffb37d}
 
 .tag{padding:3px 7px;border-radius:99px;background:var(--badge-bg);color:var(--badge-fg);font:700 .62rem/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
-.how{margin-top:30px;display:flex;flex-direction:column;gap:10px}
-.how-t{font:600 .72rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
-.way{display:flex;gap:14px;padding:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
-.way .wi{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:var(--sunk)}
-.way .wb{flex:1;min-width:0}
-.way b{display:block;font-weight:720;margin-bottom:2px}
-.way p{margin:0;font-size:.88rem;color:var(--mute)}
-.way ol{margin:6px 0 0;padding-left:18px;font-size:.88rem;color:var(--mute)}
-.way ol li{padding:1px 0}
 .pbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .pbtn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:99px;background:var(--lime);color:var(--lime-ink);font-size:.85rem;font-weight:750;transition:transform .2s var(--spring)}
 .pbtn:active{transform:scale(.95)}
 .pbtn{text-decoration:none}
 .pbtn[aria-disabled="true"]{background:var(--sunk);color:var(--mute);pointer-events:none}
-.way .hint{margin-top:8px;font-size:.78rem}
 .pbtn.s{background:var(--sunk);color:var(--ink)}
 .prompt{margin-top:10px;padding:12px 14px;border-radius:14px;background:var(--paper);color:var(--paper-ink);font:500 .78rem/1.6 var(--mono);white-space:pre-wrap;user-select:all;-webkit-user-select:all;animation:rise .4s var(--ease) both}
-.opt{display:flex;flex-direction:column;gap:8px;margin-top:30px}
+.opt{display:flex;flex-direction:column;gap:8px;margin-top:22px}
+.opt summary{cursor:pointer;font-size:.85rem;font-weight:650;color:var(--mute);list-style-position:inside}
+.opt[open] summary{margin-bottom:6px}
 .opt-l{font-size:.82rem;font-weight:650;color:var(--mute)}
 .seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:4px;background:var(--sunk);border-radius:99px}
 .seg .knob{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:99px;background:var(--card);box-shadow:var(--shadow);transition:transform .5s var(--spring)}
@@ -374,24 +387,51 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
 
 <main>
 <section class="step in-r" id="st0" aria-labelledby="t0">
-  <div class="hero">
+  <div class="hero" id="hero">
     <div class="tkw"><div class="tk">
       <div class="ctr sm l" style="--k:0">★ Bar des radins ★</div>
       <div class="ctr sm l" style="--k:1" id="tkDate">Table 4</div>
       <hr class="l" style="--k:2">
       <h1 id="t0" tabindex="-1" class="l" style="--k:3">L’addition, même pour les <em>radins.</em></h1>
-      <hr class="l" style="--k:4">
-      <div class="row l" style="--k:5"><span>2x</span><span>BIÈRE PRESSION</span><span>9,00</span></div>
-      <div class="row l" style="--k:6"><span>1x</span><span>BURGER MAISON</span><span>17,50</span></div>
-      <div class="row l" style="--k:7"><span>1x</span><span>SALADE</span><span>0,00&nbsp;?</span></div>
       <div class="pen">«&nbsp;J’ai bu que 2&nbsp;bières, moi.&nbsp;»<small>Pauline, au moment de payer</small></div>
-      <hr class="l" style="--k:8">
-      <div class="row tot l" style="--k:9"><span></span><span>TOTAL</span><span>À PARTAGER</span></div>
-      <div class="bc l" style="--k:10" aria-hidden="true"></div>
-      <div class="ctr sm l" style="--k:11">Chacun paie ce qu’il a pris</div>
     </div></div>
   </div>
-  <span class="paste-l">Ton ticket <small>Colle ici le texte du ticket</small></span>
+
+  <div class="v0" id="vChoose">
+    <h2 class="q">Comment veux-tu ajouter ton ticket&nbsp;?</h2>
+    <button class="tile rec" type="button" data-view="ia"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span class="tt"><b>Avec une IA <span class="tag2">Le plus simple</span></b><span>ChatGPT, Gemini, Claude… On te guide pas à pas.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="tile" type="button" data-view="sc"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><span class="tt"><b>Avec le raccourci iPhone</b><span>Une photo et c’est fini. iPhone 15 Pro ou plus récent.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <button class="tile" type="button" data-view="tx"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></svg></span><span class="tt"><b>J’ai déjà le texte</b><span>Colle-le directement.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <p class="curious"><b>Juste curieux ?</b> <button class="lnk" type="button" id="tryEx">Essayer avec un exemple</button></p>
+  </div>
+
+  <div class="v0" id="vMethod" hidden>
+    <button class="backm" type="button" id="backm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>Changer de méthode</button>
+
+    <div class="mp" id="mIa" hidden>
+      <h2 class="q">Avec une IA</h2>
+      <div class="stp"><span class="nb">1</span><div class="sb2"><b>Copie notre message pour l’IA</b><p>Il lui explique quoi faire de la photo.</p>
+        <div class="pbtns"><button class="pbtn" id="cprompt" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Copier le message</button><button class="pbtn s" id="sprompt" type="button" aria-expanded="false" aria-controls="prompt">Voir le message</button></div>
+        <div class="prompt" id="prompt" hidden></div></div></div>
+      <div class="stp"><span class="nb">2</span><div class="sb2"><b>Envoie-le à l’IA avec la photo du ticket</b><p>Colle le message, ajoute la photo, envoie.</p>
+        <div class="pbtns"><a class="pbtn s" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a class="pbtn s" href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a><a class="pbtn s" href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a></div></div></div>
+      <div class="stp"><span class="nb">3</span><div class="sb2"><b>Copie sa réponse et colle-la ici</b><p>Puis touche « Analyser le ticket ».</p></div></div>
+    </div>
+
+    <div class="mp" id="mSc" hidden>
+      <h2 class="q">Avec le raccourci iPhone</h2>
+      <div class="stp"><span class="nb">1</span><div class="sb2"><b>Installe le raccourci, une seule fois</b>
+        <div class="pbtns"><a class="pbtn" id="shortcut" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter à Raccourcis</a></div></div></div>
+      <div class="stp"><span class="nb">2</span><div class="sb2"><b>Au restaurant, lance-le et prends le ticket en photo</b><p>Depuis l’app Raccourcis, ou en demandant à Siri « SplitTheBill ».</p></div></div>
+      <div class="stp"><span class="nb">3</span><div class="sb2"><b>SplitTheBill s’ouvre avec les articles</b><p>Apple Intelligence lit le ticket pour toi.</p></div></div>
+      <p class="hint2">Nécessite un iPhone compatible Apple Intelligence (iPhone 15 Pro ou plus récent).</p>
+    </div>
+
+    <div class="mp" id="mTx" hidden>
+      <h2 class="q">Colle le texte du ticket</h2>
+    </div>
+
+    <div id="work">
   <div class="rwrap print" id="rwrap">
     <div class="receipt" id="rcpt">
       <div class="rc-head"><span><b>Ticket</b> · à analyser</span><span id="rcDate"></span></div>
@@ -408,22 +448,12 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
       </div>
     </div>
   </div>
-  <div class="how">
-    <span class="how-t">Comment récupérer le texte du ticket</span>
-    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><div class="wb"><b>Avec l’IA de ton choix</b>
-      <p>ChatGPT, Claude, Gemini, Le Chat… n’importe quelle IA qui lit les photos.</p>
-      <ol><li>Copie notre prompt.</li><li>Envoie-le à l’IA avec la photo du ticket.</li><li>Copie sa réponse et colle-la dans le ticket ci-dessus.</li></ol>
-      <div class="pbtns"><button class="pbtn" id="cprompt" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>Copier le prompt</button><button class="pbtn s" id="sprompt" type="button" aria-expanded="false" aria-controls="prompt">Voir le prompt</button></div>
-      <div class="prompt" id="prompt" hidden></div></div></div>
-    <div class="way"><span class="wi" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="2.5"/><rect x="13" y="3" width="8" height="8" rx="2.5"/><rect x="3" y="13" width="8" height="8" rx="2.5"/><path d="M17 13v8M13 17h8"/></svg></span><div class="wb"><b>Avec le raccourci iPhone, sans copier-coller</b>
-      <ol><li>Installe le raccourci SplitTheBill, une seule fois.</li><li>Au restaurant, lance-le et prends le ticket en photo.</li><li>Apple Intelligence lit le ticket et SplitTheBill s’ouvre avec les articles.</li></ol>
-      <div class="pbtns"><a class="pbtn" id="shortcut" href="#" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Ajouter à Raccourcis</a></div>
-      <p class="hint">Nécessite un iPhone compatible Apple Intelligence (iPhone 15 Pro ou plus récent).</p></div></div>
-  </div>
-  <div class="opt">
+  <details class="opt"><summary>Options du ticket</summary>
     <span class="opt-l" id="pml">Sur ce ticket, les prix sont</span>
     <div class="seg" id="seg" role="radiogroup" aria-labelledby="pml"><span class="knob" aria-hidden="true"></span><button type="button" role="radio" aria-checked="true" data-v="total">Le total de la ligne</button><button type="button" role="radio" aria-checked="false" data-v="unit">Le prix à l’unité</button></div>
     <p class="opt-h" id="pmh">Exemple : « 2 Spritz 17,00 » = 17 € pour les deux.</p>
+  </details>
+    </div>
   </div>
 </section>
 
@@ -631,12 +661,14 @@ function chrome(){
   else if(st===3){var u=unassigned();setCta(u?'Encore '+u+' article'+(u>1?'s':'')+' à attribuer':'Voir le résultat',u?'':IC.arrow,u>0)}
   else setCta('Partager le récap',IC.share,false);
   var b=$('back');b.classList.toggle('gone',st===0);b.tabIndex=st===0?-1:0;
+  document.querySelector('.dock').hidden=st===0&&typeof view0!=='undefined'&&(view0==='choose'||view0==='sc');
   var bs=$('prog').children;
   for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on',i<=st);bs[i].classList.toggle('cur',i===st);bs[i].disabled=i===st||i>S.max||!canEnter(i);if(i===st)bs[i].setAttribute('aria-current','step');else bs[i].removeAttribute('aria-current')}
   $('sumbar').hidden=st!==3;
 }
 function renderStep(n){if(n===0)renderTicket();else if(n===1){renderItems();renderCheck()}else if(n===2)renderPeople();else if(n===3)renderAssign();else renderResult()}
 function onEnter(n){
+  if(n===0){if(view0!=='choose')crumple.setGoal(1)}else crumple.reset();
   if(n===1)renderCheck();
   if(n===3)syncSum();
   if(n===4)playResult(true);
@@ -655,6 +687,7 @@ function setUnit(u){
 var scanning=false;
 function scan(){
   if(scanning)return;
+  if(view0==='choose'||view0==='sc')setView('tx',true);
   var raw=$('raw').value;S.raw=raw;
   if(!raw.trim()){shake($('rwrap'));toast('Colle d’abord le texte du ticket.');return}
   var r=parseTicket(raw,S.unit),v=$('scanv'),rc=$('rcpt');
@@ -706,12 +739,12 @@ var SHORTCUT_URL='https://www.icloud.com/shortcuts/c464b23accf9407e813635589b5db
 (function(){var a=$('shortcut');if(SHORTCUT_URL){a.href=SHORTCUT_URL}else{a.removeAttribute('href');a.setAttribute('aria-disabled','true');a.lastChild.textContent='Bientôt disponible'}})();
 var PROMPT='Lis ce ticket de caisse. Réponds uniquement avec la liste des articles, une ligne par article, au format : quantité nom prix_total_de_la_ligne (exemple : 2 Spritz 17,00). Mets les remises en négatif. Ajoute à la fin une ligne TOTAL montant. Pas de titre, pas de commentaire, pas de mise en forme.';
 $('prompt').textContent=PROMPT;
-function showPrompt(on){$('prompt').hidden=!on;$('sprompt').setAttribute('aria-expanded',String(on));$('sprompt').textContent=on?'Masquer le prompt':'Voir le prompt'}
+function showPrompt(on){$('prompt').hidden=!on;$('sprompt').setAttribute('aria-expanded',String(on));$('sprompt').textContent=on?'Masquer le message':'Voir le message'}
 $('sprompt').addEventListener('click',function(){showPrompt($('prompt').hidden)});
 $('cprompt').addEventListener('click',function(){
   hap();
-  function fb(){showPrompt(true);var s=window.getSelection(),rg=document.createRange();rg.selectNodeContents($('prompt'));s.removeAllRanges();s.addRange(rg);var ok=false;try{ok=document.execCommand('copy')}catch(e){}toast(ok?'Prompt copié. Colle-le dans ton IA avec la photo.':'Sélectionne le prompt ci-dessous pour le copier.')}
-  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PROMPT).then(function(){toast('Prompt copié. Colle-le dans ton IA avec la photo.')},fb);else fb()}catch(e){fb()}
+  function fb(){showPrompt(true);var s=window.getSelection(),rg=document.createRange();rg.selectNodeContents($('prompt'));s.removeAllRanges();s.addRange(rg);var ok=false;try{ok=document.execCommand('copy')}catch(e){}toast(ok?'Message copié. Colle-le dans ton IA avec la photo.':'Sélectionne le message ci-dessous pour le copier.')}
+  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PROMPT).then(function(){toast('Message copié. Colle-le dans ton IA avec la photo.')},fb);else fb()}catch(e){fb()}
 });
 
 /* ---------- Étape 2 : articles ---------- */
@@ -970,10 +1003,11 @@ $('reset').addEventListener('click',function(){
   S=fresh();save();renderTicket();$('raw').value='';$('rcres').hidden=true;
   var vis=steps.filter(function(s){return !s.hidden})[0];chrome();
   if(vis&&vis!==steps[0]){vis.classList.remove('in-l','in-r');vis.classList.add('out-r');setTimeout(function(){showOnly(0);window.scrollTo(0,0)},RM?0:190)}
-  retrigger($('rwrap'),'print');toast('Nouvelle addition');
+  setView('choose',true);retrigger($('rwrap'),'print');toast('Nouvelle addition');
 });
 
 /* ---------- Ticket d'accueil froissé en boule ---------- */
+var BALLY=78;
 var crumple=(function(){
   var hero=document.querySelector('#st0 .hero'),wrap=hero&&hero.querySelector('.tkw'),tk=hero&&hero.querySelector('.tk');
   var URL3='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
@@ -1025,7 +1059,7 @@ var crumple=(function(){
     var renderer=new T3.WebGLRenderer({alpha:true,antialias:true,premultipliedAlpha:false});
     var el=renderer.domElement;el.className='crumple';el.setAttribute('aria-hidden','true');el.style.visibility='hidden';hero.appendChild(el);
     var sh=document.createElement('div');sh.className='bshadow';hero.appendChild(sh);
-    var cr=el.getBoundingClientRect(),hr=hero.getBoundingClientRect();
+    var hr0=hero.getBoundingClientRect();el.style.height=(r.bottom-hr0.top+80)+'px';var cr=el.getBoundingClientRect(),hr=hero.getBoundingClientRect();
     renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.setSize(cr.width,cr.height,false);
     var cam=new T3.PerspectiveCamera(30,cr.width/cr.height,1,8000);cam.position.z=cr.height/2/Math.tan(15*Math.PI/180);
     var scene=new T3.Scene(),tex=new T3.CanvasTexture(cv);tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
@@ -1045,8 +1079,8 @@ var crumple=(function(){
     }
     var mesh=new T3.Mesh(geo,mat);scene.add(mesh);
     function px(x,y){return{x:x-cr.left-cr.width/2,y:-(y-cr.top-cr.height/2)}}
-    var A=px(r.left+r.width/2,r.top+r.height/2),Bc=px(r.left+r.width/2,r.top+150);
-    sh.style.left=(r.left-hr.left+r.width/2)+'px';sh.style.top=(r.top-hr.top+150+R+18)+'px';
+    var A=px(r.left+r.width/2,r.top+r.height/2),Bc=px(r.left+r.width/2,r.top+BALLY);
+    sh.style.left=(r.left-hr.left+r.width/2)+'px';sh.style.top=(r.top-hr.top+BALLY+R+18)+'px';
     G={renderer:renderer,scene:scene,cam:cam,mesh:mesh,mat:mat,pos:pos,F:F,B:B,Z:Z,N:N,A:A,Bc:Bc,el:el,sh:sh,geo:geo,tex:tex};
     st.ready=true;
   }
@@ -1088,10 +1122,27 @@ var crumple=(function(){
   window.addEventListener('resize',function(){if(!G)return;if(st.t===0)dispose();else st.dirty=true});
   return {setGoal:setGoal,reset:reset,prefetch:prefetch};
 })();
-window.addEventListener('scroll',function(){
-  if(S.step!==0){crumple.reset();return}
-  var y=window.scrollY;if(y>36)crumple.setGoal(1);else if(y<10)crumple.setGoal(0);
-},{passive:true});
+/* ---------- Accueil : choix de la méthode ---------- */
+var view0='choose';
+function heroCollapse(on){
+  var h=$('hero');if(!h)return;
+  if(RM){h.style.height=on?'200px':'';h.classList.toggle('ball',on);return}
+  var from=h.offsetHeight;
+  if(on){h.classList.add('ball');h.style.height=from+'px';void h.offsetHeight;h.style.height='200px'}
+  else{h.style.height='';var to=h.offsetHeight;h.style.height=from+'px';void h.offsetHeight;h.style.height=to+'px';setTimeout(function(){if(view0==='choose'){h.style.height='';h.classList.remove('ball')}},850)}
+}
+function setView(v,quiet){
+  var was=view0;view0=v;
+  $('vChoose').hidden=v!=='choose';$('vMethod').hidden=v==='choose';
+  $('mIa').hidden=v!=='ia';$('mSc').hidden=v!=='sc';$('mTx').hidden=v!=='tx';$('work').hidden=v==='sc'||v==='choose';
+  if(v!=='choose'&&was==='choose'){heroCollapse(true);crumple.setGoal(1)}
+  if(v==='choose'&&was!=='choose'){heroCollapse(false);crumple.setGoal(0)}
+  if(!quiet){var t=v==='choose'?$('vChoose'):$('vMethod');retrigger(t,'v0');window.scrollTo({top:0,behavior:RM?'auto':'smooth'})}
+  chrome();
+}
+$('vChoose').addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b){hap();setView(b.dataset.view)}});
+$('tryEx').addEventListener('click',function(){setView('tx');setTimeout(function(){$('demo').click()},450)});
+$('backm').addEventListener('click',function(){hap();setView('choose')});
 setTimeout(function(){if(S.step===0)crumple.prefetch()},2500);
 
 /* ---------- Démarrage ---------- */
@@ -1104,6 +1155,7 @@ if(!canEnter(S.step))S.step=0;
 renderTicket();showOnly(S.step);
 if(S.step>0){renderStep(S.step);onEnter(S.step===4?-1:S.step);if(S.step===4)playResult(false)}
 chrome();
+if(q||S.raw.trim())setView('tx',true);
 if(q)setTimeout(scan,RM?0:1500);
 })();
 </script></body></html>
