@@ -110,6 +110,27 @@ svg{flex:none}
 .tile .tt>span{display:block;margin-top:2px;font-size:.82rem;line-height:1.35;color:var(--mute)}
 .tile .tg{color:var(--mute)}
 .tag2{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:var(--lime);color:var(--lime-ink);font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
+.shoot{display:flex;align-items:center;gap:16px;width:100%;padding:20px 18px;border-radius:22px;background:var(--btn);color:var(--btn-ink);box-shadow:0 6px 0 var(--btn-edge),0 18px 34px -14px rgba(58,15,18,.55);cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s}
+.shoot:active{transform:translateY(4px);box-shadow:0 2px 0 var(--btn-edge)}
+#cam:focus-visible+.alt2,.shoot:focus-within{outline:3px solid var(--focus);outline-offset:3px}
+.shoot .si{width:60px;height:60px;flex:none;border-radius:18px;display:grid;place-items:center;background:var(--lime);color:#fff}
+.shoot b{display:block;font:400 1.45rem/1.05 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.shoot small{display:block;margin-top:4px;font-size:.85rem;opacity:.8}
+.alt2{margin:12px 0 0;text-align:center;font-size:.88rem}
+.more{margin-top:18px}
+.more summary{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;cursor:pointer;font-size:.9rem;font-weight:650;color:var(--mute);list-style:none}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .3s}
+.more[open] summary::after{transform:rotate(-135deg) translateY(-2px)}
+.more[open] summary{margin-bottom:8px}
+.more[open] .tile{animation:rise .45s var(--ease) both}
+.phst{position:relative;overflow:hidden;border-radius:16px;background:var(--sunk);box-shadow:var(--shadow);display:grid;place-items:center;min-height:200px}
+.phst img{display:block;max-width:100%;max-height:48vh;object-fit:contain;filter:grayscale(.2) contrast(1.05)}
+.laser2{position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,#ff6a2b 18%,#ffd2b8 50%,#ff6a2b 82%,transparent);box-shadow:0 0 16px 4px rgba(255,106,43,.8),0 0 70px 14px rgba(255,106,43,.3);animation:sweep2 1.7s ease-in-out infinite alternate}
+@keyframes sweep2{from{top:0}to{top:calc(100% - 3px)}}
+.phs{margin:14px 0 8px;text-align:center;font-weight:650}
+.pbar{height:8px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;border-radius:99px;background:var(--lime);transition:width .4s var(--ease)}
 .curious{margin:14px 0 0;text-align:center;font-size:.88rem;color:var(--mute)}
 .curious b{color:var(--ink)}
 .lnk{color:var(--mute);text-decoration:underline;text-underline-offset:3px;font-weight:600}
@@ -398,10 +419,14 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
   </div>
 
   <div class="v0" id="vChoose">
-    <h2 class="q">Comment veux-tu ajouter ton ticket&nbsp;?</h2>
-    <button class="tile rec" type="button" data-view="ia"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span class="tt"><b>Avec une IA <span class="tag2">Le plus simple</span></b><span>ChatGPT, Gemini, Claude… On te guide pas à pas.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <label class="shoot" for="cam"><span class="si"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.4A1.5 1.5 0 0 1 9.9 5h4.2a1.5 1.5 0 0 1 1.3.6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg></span><span class="st2"><b>Prendre le ticket en photo</b><small>Ton téléphone lit le ticket pour toi</small></span></label>
+    <input class="sr" type="file" id="cam" accept="image/*" capture="environment">
+    <p class="alt2"><label class="lnk" for="pick">ou choisir une photo déjà prise</label><input class="sr" type="file" id="pick" accept="image/*"></p>
+    <details class="more" id="more"><summary>Autres méthodes</summary>
+    <button class="tile" type="button" data-view="ia"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9z"/><path d="M19 15l.8 2.2 2.2.8-2.2.8L19 21l-.8-2.2-2.2-.8 2.2-.8z"/></svg></span><span class="tt"><b>Avec une IA</b><span>ChatGPT, Gemini, Claude… La lecture la plus fiable.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="tile" type="button" data-view="sc"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><span class="tt"><b>Avec le raccourci iPhone</b><span>Une photo et c’est fini. iPhone 15 Pro ou plus récent.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     <button class="tile" type="button" data-view="tx"><span class="em"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></svg></span><span class="tt"><b>J’ai déjà le texte</b><span>Colle-le directement.</span></span><svg class="tg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </details>
     <p class="curious"><b>Juste curieux ?</b> <button class="lnk" type="button" id="tryEx">Essayer avec un exemple</button></p>
   </div>
 
@@ -425,6 +450,14 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
       <div class="stp"><span class="nb">2</span><div class="sb2"><b>Au restaurant, lance-le et prends le ticket en photo</b><p>Depuis l’app Raccourcis, ou en demandant à Siri « SplitTheBill ».</p></div></div>
       <div class="stp"><span class="nb">3</span><div class="sb2"><b>SplitTheBill s’ouvre avec les articles</b><p>Apple Intelligence lit le ticket pour toi.</p></div></div>
       <p class="hint2">Nécessite un iPhone compatible Apple Intelligence (iPhone 15 Pro ou plus récent).</p>
+    </div>
+
+    <div class="mp" id="mPh" hidden>
+      <h2 class="q" id="phTitle">Lecture du ticket…</h2>
+      <div class="phst"><img id="phImg" alt="Photo du ticket"><div class="laser2" aria-hidden="true"></div></div>
+      <p class="phs" id="phStatus" role="status">Préparation de la photo…</p>
+      <div class="pbar" aria-hidden="true"><i id="phBar"></i></div>
+      <p class="hint2">La photo reste sur ton téléphone : rien n’est envoyé sur internet.</p>
     </div>
 
     <div class="mp" id="mTx" hidden>
@@ -557,7 +590,7 @@ function countTo(el,v,dur,delay){
 }
 
 /* ---------- Lecture du ticket (logique d'origine, conservée) ---------- */
-var SKIP=/^(sous[- ]?total|total|tva|btw|tax|bancontact|visa|mastercard|carte|cash|esp[eè]ces|rendu|monnaie|à payer|a payer|montant|table|merci|date|heure)/i;
+var SKIP=/^(sous[- ]?total|total|tva|btw|tax|bancontact|visa|mastercard|carte|cash|esp[eè]ces|rendu|monnaie|à payer|a payer|montant|table|merci|date|heure|cb\b|c\.b\.|paiement|r[eè]glement|sans contact|ticket[s]? resto|titre[s]? resto|avoir|siret|t[eé]l\b|n°)/i;
 function parseTicket(t,unit){
   var items=[],lines=[],total=null;
   function classify(orig){
@@ -661,7 +694,7 @@ function chrome(){
   else if(st===3){var u=unassigned();setCta(u?'Encore '+u+' article'+(u>1?'s':'')+' à attribuer':'Voir le résultat',u?'':IC.arrow,u>0)}
   else setCta('Partager le récap',IC.share,false);
   var b=$('back');b.classList.toggle('gone',st===0);b.tabIndex=st===0?-1:0;
-  document.querySelector('.dock').hidden=st===0&&typeof view0!=='undefined'&&(view0==='choose'||view0==='sc');
+  document.querySelector('.dock').hidden=st===0&&typeof view0!=='undefined'&&(view0==='choose'||view0==='sc'||view0==='ph');
   var bs=$('prog').children;
   for(var i=0;i<bs.length;i++){bs[i].classList.toggle('on',i<=st);bs[i].classList.toggle('cur',i===st);bs[i].disabled=i===st||i>S.max||!canEnter(i);if(i===st)bs[i].setAttribute('aria-current','step');else bs[i].removeAttribute('aria-current')}
   $('sumbar').hidden=st!==3;
@@ -687,7 +720,7 @@ function setUnit(u){
 var scanning=false;
 function scan(){
   if(scanning)return;
-  if(view0==='choose'||view0==='sc')setView('tx',true);
+  if(view0==='choose'||view0==='sc'||view0==='ph')setView('tx',true);
   var raw=$('raw').value;S.raw=raw;
   if(!raw.trim()){shake($('rwrap'));toast('Colle d’abord le texte du ticket.');return}
   var r=parseTicket(raw,S.unit),v=$('scanv'),rc=$('rcpt');
@@ -1134,7 +1167,8 @@ function heroCollapse(on){
 function setView(v,quiet){
   var was=view0;view0=v;
   $('vChoose').hidden=v!=='choose';$('vMethod').hidden=v==='choose';
-  $('mIa').hidden=v!=='ia';$('mSc').hidden=v!=='sc';$('mTx').hidden=v!=='tx';$('work').hidden=v==='sc'||v==='choose';
+  $('mIa').hidden=v!=='ia';$('mSc').hidden=v!=='sc';$('mTx').hidden=v!=='tx';$('mPh').hidden=v!=='ph';$('work').hidden=v==='sc'||v==='choose'||v==='ph';
+  if(v!=='ph')ocrTok++;
   if(v!=='choose'&&was==='choose'){heroCollapse(true);crumple.setGoal(1)}
   if(v==='choose'&&was!=='choose'){heroCollapse(false);crumple.setGoal(0)}
   if(!quiet){var t=v==='choose'?$('vChoose'):$('vMethod');retrigger(t,'v0');window.scrollTo({top:0,behavior:RM?'auto':'smooth'})}
@@ -1143,6 +1177,85 @@ function setView(v,quiet){
 $('vChoose').addEventListener('click',function(e){var b=e.target.closest('[data-view]');if(b){hap();setView(b.dataset.view)}});
 $('tryEx').addEventListener('click',function(){setView('tx');setTimeout(function(){$('demo').click()},450)});
 $('backm').addEventListener('click',function(){hap();setView('choose')});
+
+/* ---------- Lecture du ticket en photo, sur le téléphone (Tesseract) ---------- */
+var TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',twP=null,ocrTok=0,ocrLog=null;
+function tessWorker(){
+  if(twP)return twP;
+  twP=new Promise(function(res,rej){
+    function go(){
+      window.Tesseract.createWorker('fra',1,{logger:function(m){if(ocrLog)ocrLog(m)}})
+        .then(function(w){return w.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}).then(function(){res(w)})})
+        .catch(rej);
+    }
+    if(window.Tesseract)return go();
+    var sc=document.createElement('script');sc.src=TESS;sc.crossOrigin='anonymous';sc.onload=go;sc.onerror=rej;document.head.appendChild(sc);
+  });
+  twP.catch(function(){twP=null});
+  return twP;
+}
+/* Photo -> niveaux de gris avec contraste étiré : aide beaucoup sur les tickets pâles */
+function prepPhoto(url){
+  return new Promise(function(res,rej){
+    var im=new Image();
+    im.onload=function(){
+      var k=Math.min(1,2000/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.round(im.naturalWidth*k),h=Math.round(im.naturalHeight*k);
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h;var c=cv.getContext('2d');c.drawImage(im,0,0,w,h);
+      var d=c.getImageData(0,0,w,h),a=d.data,hist=new Uint32Array(256),i,g,n=w*h;
+      for(i=0;i<a.length;i+=4){g=(a[i]*299+a[i+1]*587+a[i+2]*114)/1000|0;a[i]=g;hist[g]++}
+      var lo=0,hi=255,acc=0;while(acc<n*.02&&lo<254)acc+=hist[lo++];acc=0;while(acc<n*.02&&hi>1)acc+=hist[hi--];
+      var sp=Math.max(1,hi-lo);
+      for(i=0;i<a.length;i+=4){g=Math.max(0,Math.min(255,(a[i]-lo)*255/sp));a[i]=a[i+1]=a[i+2]=g}
+      c.putImageData(d,0,0);res(cv);
+    };
+    im.onerror=rej;im.src=url;
+  });
+}
+/* Corrige les erreurs de lecture courantes sur les prix (O à la place de 0, espace à la place de la virgule…) */
+function cleanOcr(t){
+  return String(t).split('\n').map(function(l){
+    l=l.replace(/[|_~«»“”]/g,' ').replace(/\s+/g,' ').trim();
+    l=l.replace(/(\d)[oO](?=\d|\b)/g,'$10').replace(/\b[oO](?=[.,]\d)/g,'0');
+    l=l.replace(/([A-Za-zÀ-ÿ].*?\s)(\d{1,4})\s?[.,'`]\s?(\d)\s?(\d)\s*(?:€|EUR|E)?\s*$/i,'$1$2,$3$4');
+    l=l.replace(/([A-Za-zÀ-ÿ].*?\s)(\d{1,4}) (\d{2})\s*(?:€|EUR)?\s*$/i,'$1$2,$3');
+    return l;
+  }).filter(function(l){return l.length>1}).join('\n');
+}
+function phStatus(t,pc){$('phStatus').textContent=t;if(pc!=null)$('phBar').style.width=Math.round(pc)+'%'}
+function startPhoto(file){
+  if(!file)return;
+  var tok=++ocrTok,url=URL.createObjectURL(file);
+  setView('ph');ocrTok=tok;
+  $('phImg').src=url;$('phTitle').textContent='Lecture du ticket…';phStatus('Préparation de la photo…',4);
+  var first=!twP;
+  ocrLog=function(m){
+    if(tok!==ocrTok)return;
+    if(m.status==='recognizing text')phStatus('Lecture des articles…',40+58*(m.progress||0));
+    else if(/loading|initializ/.test(m.status||''))phStatus(first?'Préparation de l’outil de lecture (la 1re fois seulement)…':'Préparation…',5+30*(m.progress||0));
+  };
+  Promise.all([prepPhoto(url),tessWorker()]).then(function(r){
+    if(tok!==ocrTok)return null;
+    phStatus('Lecture des articles…',40);
+    return r[1].recognize(r[0]);
+  }).then(function(res){
+    if(!res||tok!==ocrTok)return;
+    URL.revokeObjectURL(url);
+    var txt=cleanOcr(res.data.text);
+    $('raw').value=txt;S.raw=txt;save();
+    phStatus('C’est lu !',100);hap();
+    var ok=parseTicket(txt,S.unit).items.length>0;
+    setTimeout(function(){
+      if(tok!==ocrTok)return;
+      setView('tx',true);
+      if(ok)scan();else{chrome();toast('Lecture difficile. Corrige le texte ci-dessous ou reprends une photo plus nette.')}
+    },RM?0:500);
+  }).catch(function(){
+    if(tok!==ocrTok)return;
+    toast('La lecture a échoué. Vérifie ta connexion, puis réessaie.');setView('choose');
+  });
+}
+['cam','pick'].forEach(function(id){$(id).addEventListener('change',function(){var f=this.files&&this.files[0];this.value='';startPhoto(f)})});
+$('cam').addEventListener('click',function(){tessWorker()});
 setTimeout(function(){if(S.step===0)crumple.prefetch()},2500);
 
 /* ---------- Démarrage ---------- */
