@@ -97,7 +97,11 @@ svg{flex:none}
 .shake{animation:shake .45s}
 
 /* Étape 1 : ticket */
-.hero{padding-block:18px 34px}
+.hero{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:0;padding-block:18px 34px}
+#st0>:not(.hero){position:relative;z-index:1}
+/* Écrasement du ticket d'accueil lié au défilement : --p va de 0 (déplié) à 1 (écrasé) */
+.tkw{transform-origin:50% 0;transform:perspective(900px) rotateX(calc(var(--p,0) * 34deg)) scaleY(calc(1 - var(--p,0) * .64)) scaleX(calc(1 - var(--p,0) * .1)) skewX(calc(var(--p,0) * -3deg)) rotate(calc(var(--p,0) * 3deg));opacity:calc(1 - var(--p,0) * .85);will-change:transform,opacity}
+.tk .fold{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:var(--p,0);background:repeating-linear-gradient(180deg,transparent 0 24px,rgba(58,15,18,.16) 24px 27px,rgba(255,255,255,.55) 27px 29px,transparent 29px 52px)}
 .tk{position:relative;margin:6px 10px 0;padding:24px 22px 22px;background:var(--paper);color:var(--paper-ink);transform:rotate(-1.6deg);filter:drop-shadow(0 22px 26px rgba(58,15,18,.22)) drop-shadow(0 2px 2px rgba(0,0,0,.06));font:400 .84rem/1.55 var(--mono);animation:tkprint 1.3s .15s var(--ease) both}
 @keyframes tkprint{from{clip-path:inset(-20px -20px 100% -20px);transform:rotate(-1.6deg) translateY(-30px)}to{clip-path:inset(-20px -20px -20px -20px)}}
 .tk::before,.tk::after{content:"";position:absolute;left:0;right:0;height:10px;background:var(--paper)}
@@ -118,7 +122,7 @@ svg{flex:none}
 .tk .pen small{display:block;margin:3px 8px 0 0;font-size:1.05rem;text-align:right}
 @keyframes pen{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 -5% 0 0)}}
 .tk .bc{height:34px;margin:12px 16px 4px;background:repeating-linear-gradient(90deg,var(--paper-ink) 0 2px,transparent 2px 4px,var(--paper-ink) 4px 5px,transparent 5px 8px,var(--paper-ink) 8px 11px,transparent 11px 12px)}
-.paste-l{display:block;margin:0 0 10px;font:400 1.15rem/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
+.paste-l{display:block;margin:-22px 0 0;padding:26px 0 10px;background:linear-gradient(transparent,var(--bg) 40%);font:400 1.15rem/1 var(--display);letter-spacing:.03em;text-transform:uppercase}
 .paste-l small{font:400 .82rem var(--font);text-transform:none;letter-spacing:0;color:var(--mute);margin-left:6px}
 .rwrap{position:relative;filter:drop-shadow(0 26px 34px rgba(58,15,18,.20)) drop-shadow(0 2px 3px rgba(0,0,0,.08))}
 .rwrap.print{animation:print 1.15s 1.2s var(--ease) both}
@@ -369,7 +373,7 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
 <main>
 <section class="step in-r" id="st0" aria-labelledby="t0">
   <div class="hero">
-    <div class="tk">
+    <div class="tkw"><div class="tk"><div class="fold" aria-hidden="true"></div>
       <div class="ctr sm l" style="--k:0">★ Bar des radins ★</div>
       <div class="ctr sm l" style="--k:1" id="tkDate">Table 4</div>
       <hr class="l" style="--k:2">
@@ -383,7 +387,7 @@ h2{font:400 clamp(2.4rem,11vw,3.3rem)/1.06 var(--display);letter-spacing:.005em;
       <div class="row tot l" style="--k:9"><span></span><span>TOTAL</span><span>À PARTAGER</span></div>
       <div class="bc l" style="--k:10" aria-hidden="true"></div>
       <div class="ctr sm l" style="--k:11">Chacun paie ce qu’il a pris</div>
-    </div>
+    </div></div>
   </div>
   <span class="paste-l">Ton ticket <small>Colle ici le texte du ticket</small></span>
   <div class="rwrap print" id="rwrap">
@@ -966,6 +970,12 @@ $('reset').addEventListener('click',function(){
   if(vis&&vis!==steps[0]){vis.classList.remove('in-l','in-r');vis.classList.add('out-r');setTimeout(function(){showOnly(0);window.scrollTo(0,0)},RM?0:190)}
   retrigger($('rwrap'),'print');toast('Nouvelle addition');
 });
+
+/* ---------- Ticket d'accueil écrasé au défilement ---------- */
+var heroEl=document.querySelector('#st0 .hero'),crushRaf=0;
+function crush(){crushRaf=0;if(!heroEl)return;var h=heroEl.offsetHeight||1,p=S.step===0?Math.min(1,Math.max(0,window.scrollY/(h*.75))):0;heroEl.style.setProperty('--p',p.toFixed(3))}
+window.addEventListener('scroll',function(){if(!crushRaf)crushRaf=requestAnimationFrame(crush)},{passive:true});
+window.addEventListener('resize',crush);
 
 /* ---------- Démarrage ---------- */
 (function(){var d=new Date();$('tkDate').textContent='Table 4 · '+d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})})();
