@@ -18,7 +18,7 @@ Photo ──► Vision (texte, sur l'iPhone) ──► Apple Intelligence ──
 ```
 
 - `Scan/ReceiptOCR.swift` : reconnaissance du texte avec Vision, puis recollage des blocs (nom à gauche, prix à droite) ligne par ligne.
-- `Scan/ReceiptAI.swift` : génération guidée (`@Generable`) avec le framework Foundation Models. Le modèle **Private Cloud Compute** (`PrivateCloudComputeLanguageModel`) est toujours essayé en premier. Si le cloud ne répond pas (pas de réseau, quota atteint, entitlement absent), l'app passe au modèle sur l'iPhone, puis à la lecture classique. L'écran des articles indique quel moteur a lu le ticket.
+- `Scan/ReceiptAI.swift` : génération guidée (`@Generable`) avec le framework Foundation Models. Le modèle **Private Cloud Compute** (`PrivateCloudComputeLanguageModel`) est toujours essayé en premier. Si le cloud ne répond pas (pas de réseau, quota atteint), l’app passe au modèle sur l'iPhone, puis à la lecture classique. L'écran des articles indique quel moteur a lu le ticket.
 - `Core/TicketParser.swift` : portage fidèle de `parseTicket` et `cleanOcr` de la web app.
 
 ### Activer Private Cloud Compute
