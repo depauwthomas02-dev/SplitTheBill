@@ -5,80 +5,93 @@ import PhotosUI
 struct TicketStepView: View {
     @Environment(BillStore.self) private var store
     @State private var scanning = false
+    @State private var picking = false
     @State private var pick: PhotosPickerItem?
     @State private var textSheet = false
     @State private var engine = ""
 
+    private var hasCamera: Bool { DocumentScanner.isSupported }
+
     var body: some View {
         ScrollView {
-            VStack(spacing: 22) {
+            VStack(spacing: 0) {
                 HeroTicket()
-                    .padding(.top, 8)
+                    .padding(.horizontal, 14)
+                    .padding(.top, 10)
 
-                VStack(spacing: 12) {
-                    if DocumentScanner.isSupported {
-                        Button { scanning = true } label: {
-                            HStack(spacing: 14) {
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 24, weight: .semibold))
-                                    .frame(width: 52, height: 52)
-                                    .background(Theme.orange, in: .rect(cornerRadius: 16))
-                                    .foregroundStyle(.white)
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Prendre le ticket en photo").font(.system(size: 18, weight: .bold))
-                                    Text("Une photo et c’est lu.").font(.subheadline).opacity(0.75)
-                                }
-                                Spacer()
-                                Image(systemName: "chevron.right").font(.headline)
-                            }
-                            .padding(14)
-                            .foregroundStyle(Theme.buttonInk)
-                            .background(Theme.button, in: .rect(cornerRadius: 22))
+                // L'action principale : une photo et c'est lu.
+                Button {
+                    if hasCamera { scanning = true } else { picking = true }
+                } label: {
+                    HStack(spacing: 16) {
+                        Image(systemName: hasCamera ? "camera.fill" : "photo.fill")
+                            .font(.system(size: 25, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 60, height: 60)
+                            .background(Theme.orange, in: .rect(cornerRadius: 18))
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(hasCamera ? "PRENDRE LE TICKET EN PHOTO" : "CHOISIR UNE PHOTO DU TICKET")
+                                .font(Theme.display(23))
+                                .kerning(0.4)
+                                .lineSpacing(1)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text("Une photo et c’est lu.")
+                                .font(.footnote)
+                                .opacity(0.8)
                         }
-                        .accessibilityHint("Ouvre le scanner de documents")
+                        Spacer(minLength: 0)
                     }
+                    .padding(.vertical, 18)
+                    .padding(.horizontal, 18)
+                    .contentShape(.rect(cornerRadius: 24))
+                }
+                .buttonStyle(SolidButtonStyle())
+                .accessibilityLabel(hasCamera ? "Prendre le ticket en photo" : "Choisir une photo du ticket")
+                .padding(.top, 30)
 
-                    PhotosPicker(selection: $pick, matching: .images) {
-                        Label(DocumentScanner.isSupported ? "ou choisir une photo déjà prise" : "Choisir une photo du ticket",
-                              systemImage: "photo.on.rectangle")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Theme.orange)
+                // Les autres façons d'entrer un ticket, en verre.
+                GlassEffectContainer(spacing: 10) {
+                    HStack(spacing: 10) {
+                        if hasCamera {
+                            GlassTile(icon: "photo.on.rectangle.angled", title: "Importer\nune photo") { picking = true }
+                        }
+                        GlassTile(icon: "doc.on.clipboard", title: "Coller\nle texte") { textSheet = true }
+                        GlassTile(icon: "square.and.pencil", title: "Saisir\nà la main") { store.startManually() }
                     }
+                }
+                .padding(.top, 16)
 
+                if !engine.isEmpty {
                     Label(engine, systemImage: "apple.intelligence")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Theme.mute)
-                        .padding(.horizontal, 12).padding(.vertical, 6)
-                        .background(Theme.card, in: .capsule)
-                        .overlay(Capsule().stroke(Theme.line))
-                        .opacity(engine.isEmpty ? 0 : 1)
+                        .padding(.top, 18)
                 }
 
-                DisclosureGroup {
-                    VStack(spacing: 10) {
-                        MethodTile(icon: "doc.on.clipboard", title: "J’ai déjà le texte", subtitle: "Colle-le directement.") { textSheet = true }
-                        MethodTile(icon: "square.and.pencil", title: "Saisir à la main", subtitle: "Ajoute les articles un par un.") { store.startManually() }
-                    }
-                    .padding(.top, 10)
-                } label: {
-                    Text("Autres méthodes").font(.subheadline.weight(.semibold))
-                }
-                .tint(Theme.ink)
-                .card()
-
-                HStack(spacing: 4) {
-                    Text("Juste curieux ?").fontWeight(.bold)
-                    Button("Essayer avec un exemple") {
+                HStack(spacing: 5) {
+                    Text("Juste curieux ?")
+                        .fontWeight(.bold)
+                    Button {
                         Task { await store.analyze(text: TicketParser.demo) }
+                    } label: {
+                        Text("Essayer avec un exemple")
+                            .fontWeight(.semibold)
+                            .underline()
+                            .foregroundStyle(Theme.mute)
                     }
-                    .fontWeight(.semibold)
+                    .buttonStyle(.plain)
                 }
                 .font(.subheadline)
-                .padding(.bottom, 24)
+                .padding(.top, 14)
+                .padding(.bottom, 28)
             }
             .padding(.horizontal, 16)
+            .frame(maxWidth: 560)
+            .frame(maxWidth: .infinity)
         }
         .scrollIndicators(.hidden)
+        .scrollBounceBehavior(.basedOnSize)
         .fullScreenCover(isPresented: $scanning) {
             DocumentScanner { image in
                 scanning = false
@@ -88,6 +101,7 @@ struct TicketStepView: View {
             }
             .ignoresSafeArea()
         }
+        .photosPicker(isPresented: $picking, selection: $pick, matching: .images)
         .onChange(of: pick) { _, item in
             guard let item else { return }
             pick = nil
@@ -104,68 +118,122 @@ struct TicketStepView: View {
     }
 }
 
-private struct MethodTile: View {
+/// Une tuile de verre : pictogramme orange au-dessus d'un libellé sur deux lignes.
+private struct GlassTile: View {
     var icon: String
     var title: String
-    var subtitle: String
     var action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            VStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: 18, weight: .semibold))
-                    .frame(width: 42, height: 42)
-                    .background(Theme.sunk, in: .rect(cornerRadius: 12))
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title).font(.subheadline.weight(.bold))
-                    Text(subtitle).font(.caption).foregroundStyle(Theme.mute)
-                }
-                Spacer()
-                Image(systemName: "chevron.right").font(.caption.weight(.bold)).foregroundStyle(Theme.mute)
+                    .font(.system(size: 22, weight: .semibold))
+                    .foregroundStyle(Theme.orange)
+                    .frame(height: 28)
+                Text(title)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(Theme.ink)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2, reservesSpace: true)
             }
-            .foregroundStyle(Theme.ink)
-            .contentShape(.rect)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .padding(.horizontal, 6)
+            .contentShape(.rect(cornerRadius: 22))
         }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 22))
+        .accessibilityLabel(title.replacingOccurrences(of: "\n", with: " "))
     }
 }
 
-/// Le ticket d'accueil « Bar des radins ».
+/// Le ticket d'accueil « Bar des radins », imprimé à l'ouverture.
 struct HeroTicket: View {
-    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var printed = false
+    @State private var signed = false
+
+    private static let stamp: String = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "fr_FR")
+        f.dateFormat = "dd/MM · HH:mm"
+        return "TABLE 4 · " + f.string(from: .now)
+    }()
 
     var body: some View {
-        VStack(spacing: 10) {
-            Text("★ Bar des radins ★").font(Theme.mono(13, weight: .bold))
-            Text(Date.now.formatted(.dateTime.day().month(.twoDigits).hour().minute()).uppercased())
-                .font(Theme.mono(12))
-                .foregroundStyle(Theme.paperMute)
-            Rectangle()
-                .stroke(style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
-                .frame(height: 1)
-                .foregroundStyle(Theme.paperMute)
-            Text("L’addition, même pour les \(Text("radins.").foregroundStyle(Theme.orange))")
-                .font(Theme.display(42))
+        VStack(spacing: 0) {
+            Group {
+                Text("★ BAR DES RADINS ★")
+                Text(Self.stamp)
+            }
+            .font(Theme.mono(12))
+            .kerning(1.4)
+
+            DashedRule().padding(.vertical, 12)
+
+            Text("L’ADDITION, MÊME POUR LES \(Text("RADINS.").foregroundStyle(Theme.orange))")
+                .font(Theme.display(40))
+                .lineSpacing(3)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityLabel("L’addition, même pour les radins.")
                 .accessibilityAddTraits(.isHeader)
-            VStack(spacing: 2) {
-                Text("« J’ai bu que 2 bières, moi. »")
-                    .font(.system(size: 22, weight: .semibold, design: .serif)).italic()
-                Text("Pauline, au moment de payer").font(.caption)
+
+            VStack(alignment: .trailing, spacing: 0) {
+                Text("« J’ai bu que 2 bières, moi. »").font(Theme.hand(25))
+                Text("Pauline, au moment de payer").font(Theme.hand(18))
             }
             .foregroundStyle(Theme.pen)
-            .rotationEffect(.degrees(-2))
-            .padding(.top, 4)
+            .rotationEffect(.degrees(-3))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 12)
+            .padding(.leading, 4)
+            .opacity(signed ? 1 : 0)
+            .scaleEffect(signed ? 1 : 1.12, anchor: .leading)
         }
         .foregroundStyle(Theme.paperInk)
-        .padding(.horizontal, 22).padding(.vertical, 28)
-        .frame(maxWidth: 360)
+        .padding(.horizontal, 20)
+        .padding(.top, 26)
+        .padding(.bottom, 24)
+        .frame(maxWidth: .infinity)
         .background(Theme.paper, in: ZigZag())
-        .shadow(color: Theme.bordeaux.opacity(0.18), radius: 18, y: 12)
-        .rotationEffect(.degrees(appeared ? -1.6 : 0))
-        .offset(y: appeared ? 0 : 24)
-        .opacity(appeared ? 1 : 0)
-        .onAppear { withAnimation(.spring(response: 0.7, dampingFraction: 0.7)) { appeared = true } }
+        .mask(alignment: .top) {
+            // Le ticket sort de l'imprimante : on le dévoile du haut vers le bas.
+            Rectangle().scaleEffect(x: 1, y: printed ? 1 : 0.02, anchor: .top)
+        }
+        .shadow(color: Theme.bordeaux.opacity(0.22), radius: 22, y: 20)
+        .shadow(color: .black.opacity(0.06), radius: 1, y: 2)
+        .rotationEffect(.degrees(-1.6))
+        .onAppear {
+            guard !printed else { return }
+            if reduceMotion {
+                printed = true
+                signed = true
+            } else {
+                withAnimation(.timingCurve(0.22, 1, 0.36, 1, duration: 1.1).delay(0.1)) { printed = true }
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.65).delay(1.0)) { signed = true }
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Ligne de pointillés d'un ticket.
+struct DashedRule: View {
+    var body: some View {
+        Line()
+            .stroke(Color.black.opacity(0.18), style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+            .frame(height: 1.5)
+    }
+
+    private struct Line: Shape {
+        func path(in r: CGRect) -> Path {
+            var p = Path()
+            p.move(to: CGPoint(x: r.minX, y: r.midY))
+            p.addLine(to: CGPoint(x: r.maxX, y: r.midY))
+            return p
+        }
     }
 }
 
@@ -178,49 +246,52 @@ struct PasteTextSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 14) {
-                ZStack(alignment: .topLeading) {
-                    if text.isEmpty {
-                        Text("Pizza Margherita 12,50\n2 Spritz 17,00\nTiramisu 7,50\nTOTAL 37,00")
-                            .foregroundStyle(Theme.paperMute)
-                            .padding(.horizontal, 5).padding(.vertical, 8)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    ZStack(alignment: .topLeading) {
+                        if text.isEmpty {
+                            Text("Pizza Margherita 12,50\n2 Spritz 17,00\nTiramisu 7,50\nTOTAL 37,00")
+                                .foregroundStyle(Theme.paperMute)
+                                .padding(.horizontal, 5).padding(.vertical, 8)
+                                .allowsHitTesting(false)
+                        }
+                        TextEditor(text: $text)
+                            .scrollContentBackground(.hidden)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
                     }
-                    TextEditor(text: $text)
-                        .scrollContentBackground(.hidden)
-                        .autocorrectionDisabled()
-                        .textInputAutocapitalization(.never)
-                }
-                .font(Theme.mono(15))
-                .foregroundStyle(Theme.paperInk)
-                .padding(12)
-                .frame(minHeight: 220)
-                .background(Theme.paper, in: .rect(cornerRadius: 14))
+                    .font(Theme.mono(15))
+                    .foregroundStyle(Theme.paperInk)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 18)
+                    .frame(minHeight: 240)
+                    .background(Theme.paper, in: ZigZag())
+                    .shadow(color: Theme.bordeaux.opacity(0.14), radius: 14, y: 10)
 
-                HStack {
-                    PasteButton(payloadType: String.self) { strings in
-                        if let s = strings.first { text = s }
-                    }
-                    .labelStyle(.titleAndIcon)
-                    .buttonBorderShape(.capsule)
-                    Button("Exemple", systemImage: "sparkles") { text = TicketParser.demo }
-                        .buttonStyle(.bordered)
+                    HStack {
+                        PasteButton(payloadType: String.self) { strings in
+                            if let s = strings.first { text = s }
+                        }
+                        .labelStyle(.titleAndIcon)
                         .buttonBorderShape(.capsule)
-                }
+                        Button("Exemple", systemImage: "sparkles") { text = TicketParser.demo }
+                            .buttonStyle(.glass)
+                    }
 
-                Text("Sur ce ticket, les prix sont").font(.subheadline.weight(.semibold))
-                Picker("Prix", selection: $unit) {
-                    Text("Le total de la ligne").tag(false)
-                    Text("Le prix à l’unité").tag(true)
+                    Text("Sur ce ticket, les prix sont").font(.subheadline.weight(.semibold))
+                    Picker("Prix", selection: $unit) {
+                        Text("Le total de la ligne").tag(false)
+                        Text("Le prix à l’unité").tag(true)
+                    }
+                    .pickerStyle(.segmented)
+                    Text(unit ? "Exemple : « 2 Spritz 8,50 » = 8,50 € chacun, 17 € en tout." : "Exemple : « 2 Spritz 17,00 » = 17 € pour les deux.")
+                        .font(.caption).foregroundStyle(Theme.mute)
                 }
-                .pickerStyle(.segmented)
-                Text(unit ? "Exemple : « 2 Spritz 8,50 » = 8,50 € chacun, 17 € en tout." : "Exemple : « 2 Spritz 17,00 » = 17 € pour les deux.")
-                    .font(.caption).foregroundStyle(Theme.mute)
-                Text("Apple Intelligence lit le texte quand elle est disponible. Ce réglage sert à la lecture classique.")
-                    .font(.caption2).foregroundStyle(Theme.mute)
-                Spacer()
+                .padding(16)
             }
-            .padding(16)
+            .scrollDismissesKeyboard(.interactively)
             .background(Theme.bg)
+            .foregroundStyle(Theme.ink)
             .navigationTitle("Texte du ticket")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -238,6 +309,7 @@ struct PasteTextSheet: View {
             }
             .onAppear { text = store.bill.rawText; unit = store.bill.unitPrices }
         }
+        .tint(Theme.orange)
         .presentationDetents([.large])
     }
 }

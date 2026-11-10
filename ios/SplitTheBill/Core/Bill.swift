@@ -36,7 +36,7 @@ enum ReadingEngine: String, Codable, Sendable {
         switch self {
         case .privateCloud: "Lu par Apple Intelligence · Private Cloud Compute"
         case .onDevice: "Lu par Apple Intelligence · sur l’iPhone"
-        case .classic: "Lecture classique"
+        case .classic: "Lecture exacte du ticket"
         case .manual: "Saisi à la main"
         }
     }

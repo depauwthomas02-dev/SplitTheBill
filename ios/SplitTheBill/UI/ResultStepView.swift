@@ -14,92 +14,83 @@ struct ResultStepView: View {
         let ok = ticket == nil || ticket == r.totalCents
         let recap = SplitCalculator.recap(bill, r)
 
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(spacing: 16) {
-                    StepHeader(step: .result, title: "Chacun sa part.", subtitle: "Touche une personne pour voir le détail de ce qu’elle doit.")
+        ScrollView {
+            VStack(spacing: 16) {
+                StepHeader(step: .result, title: "Chacun sa part.", subtitle: "Touche une personne pour voir le détail de ce qu’elle doit.")
 
-                    VStack(alignment: .leading, spacing: 14) {
-                        Text("Total").font(.caption.weight(.bold)).textCase(.uppercase).foregroundStyle(.white.opacity(0.7))
-                        Text(Money.eur(shown ? r.totalCents : 0))
-                            .font(Theme.display(56))
-                            .foregroundStyle(.white)
-                            .contentTransition(.numericText(value: Double(shown ? r.totalCents : 0)))
-                        GeometryReader { g in
-                            HStack(spacing: 3) {
-                                ForEach(bill.people) { p in
-                                    let w = r.totalCents > 0 ? CGFloat(max(0, r.owed[p.id] ?? 0)) / CGFloat(r.totalCents) : 1 / CGFloat(max(1, bill.people.count))
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .fill(Theme.avatar(p).bg)
-                                        .frame(width: max(0, (g.size.width - CGFloat(bill.people.count - 1) * 3) * (shown ? w : 0)))
-                                }
-                            }
-                        }
-                        .frame(height: 12)
-                        FlowLegend(people: bill.people)
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: ok ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
-                                .foregroundStyle(ok ? Theme.soft : Color(hex: 0xffd27d))
-                            if ok {
-                                Text("**Réparti au centime près**\(ticket != nil ? ", conforme au ticket." : ".")")
-                            } else if let ticket {
-                                Text("Le ticket indique **\(Money.eur(ticket))**, soit \(Money.eur(ticket - r.totalCents)) d’écart. Ajoute-le en frais à l’étape 2.")
-                            }
-                        }
-                        .font(.subheadline)
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("TOTAL").font(Theme.mono(12, weight: .bold)).kerning(1.6).foregroundStyle(.white.opacity(0.7))
+                    Text(Money.eur(shown ? r.totalCents : 0))
+                        .font(Theme.display(56))
                         .foregroundStyle(.white)
-                    }
-                    .padding(20)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Theme.bordeaux, in: .rect(cornerRadius: 24))
-
-                    ForEach(Array(bill.people.enumerated()), id: \.element.id) { i, p in
-                        PersonResult(person: p, result: r, shown: shown, isOpen: open.contains(p.id)) {
-                            withAnimation(.snappy) {
-                                if open.contains(p.id) { open.remove(p.id) } else { open.insert(p.id) }
+                        .contentTransition(.numericText(value: Double(shown ? r.totalCents : 0)))
+                    GeometryReader { g in
+                        HStack(spacing: 3) {
+                            ForEach(bill.people) { p in
+                                let w = r.totalCents > 0 ? CGFloat(max(0, r.owed[p.id] ?? 0)) / CGFloat(r.totalCents) : 1 / CGFloat(max(1, bill.people.count))
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Theme.avatar(p).bg)
+                                    .frame(width: max(0, (g.size.width - CGFloat(bill.people.count - 1) * 3) * (shown ? w : 0)))
                             }
                         }
-                        .opacity(shown ? 1 : 0)
-                        .offset(y: shown ? 0 : 16)
-                        .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.25 + Double(i) * 0.08), value: shown)
                     }
-
-                    HStack(spacing: 10) {
-                        shareChip(title: "WhatsApp", icon: "bubble.left.and.bubble.right.fill",
-                                  url: URL(string: "https://wa.me/?text=" + (recap.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")))
-                        shareChip(title: "Messages", icon: "message.fill",
-                                  url: URL(string: "sms:&body=" + (recap.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")))
-                        Button {
-                            UIPasteboard.general.string = recap
-                            store.show("Récap copié")
-                        } label: {
-                            chip("Copier", "doc.on.doc.fill")
+                    .frame(height: 12)
+                    FlowLegend(people: bill.people)
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: ok ? "checkmark.seal.fill" : "exclamationmark.triangle.fill")
+                            .foregroundStyle(ok ? Theme.soft : Color(hex: 0xffd27d))
+                        if ok {
+                            Text("**Réparti au centime près**\(ticket != nil ? ", conforme au ticket." : ".")")
+                        } else if let ticket {
+                            Text("Le ticket indique **\(Money.eur(ticket))**, soit \(Money.eur(ticket - r.totalCents)) d’écart. Ajoute-le en frais à l’étape 2.")
                         }
                     }
-                    .foregroundStyle(Theme.ink)
+                    .font(.subheadline)
+                    .foregroundStyle(.white)
                 }
-                .padding(16)
-            }
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Theme.bordeaux, in: .rect(cornerRadius: 24))
 
-            HStack(spacing: 10) {
-                Button { store.back() } label: {
-                    Image(systemName: "arrow.left")
-                        .font(.system(size: 19, weight: .bold))
-                        .frame(width: 56, height: 56)
-                        .background(Theme.card, in: .rect(cornerRadius: 18))
-                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
+                ForEach(Array(bill.people.enumerated()), id: \.element.id) { i, p in
+                    PersonResult(person: p, result: r, shown: shown, isOpen: open.contains(p.id)) {
+                        withAnimation(.snappy) {
+                            if open.contains(p.id) { open.remove(p.id) } else { open.insert(p.id) }
+                        }
+                    }
+                    .opacity(shown ? 1 : 0)
+                    .offset(y: shown ? 0 : 16)
+                    .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.25 + Double(i) * 0.08), value: shown)
                 }
-                .accessibilityLabel("Étape précédente")
-                ShareLink(item: recap, subject: Text("SplitTheBill"), preview: SharePreview("SplitTheBill · l’addition")) {
-                    Label("Partager le récap", systemImage: "square.and.arrow.up")
-                        .font(.system(size: 17, weight: .bold))
-                        .frame(maxWidth: .infinity, minHeight: 56)
-                        .foregroundStyle(Theme.buttonInk)
-                        .background(Theme.button, in: .rect(cornerRadius: 18))
+
+                HStack(spacing: 10) {
+                    shareChip(title: "WhatsApp", icon: "bubble.left.and.bubble.right.fill",
+                              url: URL(string: "https://wa.me/?text=" + (recap.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")))
+                    shareChip(title: "Messages", icon: "message.fill",
+                              url: URL(string: "sms:&body=" + (recap.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")))
+                    Button {
+                        UIPasteboard.general.string = recap
+                        store.show("Récap copié")
+                    } label: {
+                        chip("Copier", "doc.on.doc.fill")
+                    }
+                }
+                .foregroundStyle(Theme.ink)
+            }
+            .padding(16)
+        }
+
+        .safeAreaBar(edge: .bottom) {
+            GlassEffectContainer(spacing: 10) {
+                HStack(spacing: 10) {
+                    DockBackButton()
+                    ShareLink(item: recap, subject: Text("SplitTheBill"), preview: SharePreview("SplitTheBill · l’addition")) {
+                        DockLabel(text: "Partager le récap", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 16).padding(.top, 10).padding(.bottom, 8)
-            .background(.bar)
+            .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 8)
         }
         .overlay { ConfettiView(trigger: confetti).allowsHitTesting(false).ignoresSafeArea() }
         .sensoryFeedback(.success, trigger: confetti)

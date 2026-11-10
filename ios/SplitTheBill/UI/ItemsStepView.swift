@@ -7,62 +7,55 @@ struct ItemsStepView: View {
 
     var body: some View {
         @Bindable var store = store
-        VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: 14) {
-                        StepHeader(step: .items, title: "Vérifie les articles.",
-                                   subtitle: "Corrige ce que l’iPhone a mal lu. Le prix indiqué est celui de la ligne entière.")
-                        if let engine = store.bill.engine {
-                            Label(engine.label, systemImage: engine == .classic || engine == .manual ? "text.alignleft" : "apple.intelligence")
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(Theme.mute)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-
-                        ForEach($store.bill.items) { $item in
-                            ItemRow(item: $item, focus: $focus) {
-                                withAnimation(.snappy) { store.bill.removeItem(item.id) }
-                            }
-                            .id(item.id)
-                            .transition(.scale(scale: 0.95).combined(with: .opacity))
-                        }
-
-                        Button {
-                            let id = withAnimation(.snappy) { store.bill.addItem() }
-                            focus = id
-                            withAnimation { proxy.scrollTo(id, anchor: .center) }
-                        } label: {
-                            Label("Ajouter un article", systemImage: "plus")
-                                .font(.subheadline.weight(.bold))
-                                .frame(maxWidth: .infinity, minHeight: 48)
-                                .overlay(RoundedRectangle(cornerRadius: 16).stroke(style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])).foregroundStyle(Theme.line))
-                        }
-
-                        CheckCard()
-
-                        HStack(spacing: 12) {
-                            MoneyField(title: "Pourboire, frais (€)", placeholder: "0,00", text: $store.bill.extraText)
-                            MoneyField(title: "Total du ticket (€)", placeholder: "Si connu", text: $store.bill.ticketTotalText)
-                        }
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 14) {
+                    StepHeader(step: .items, title: "Vérifie les articles.",
+                               subtitle: "Corrige ce que l’iPhone a mal lu. Le prix indiqué est celui de la ligne entière.")
+                    if let engine = store.bill.engine {
+                        Label(engine.label, systemImage: engine == .classic || engine == .manual ? "text.alignleft" : "apple.intelligence")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.mute)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(16)
-                }
-                .scrollDismissesKeyboard(.interactively)
-            }
 
-            Dock(label: "Continuer", systemImage: "arrow.right",
-                 disabled: !store.bill.items.contains { !$0.name.trimmed.isEmpty || $0.cents != 0 }) {
-                focus = nil
-                store.bill.dropEmptyItems()
-                if store.bill.items.isEmpty { store.bill.addItem(); return }
-                store.go(.people)
+                    ForEach($store.bill.items) { $item in
+                        ItemRow(item: $item, focus: $focus) {
+                            withAnimation(.snappy) { store.bill.removeItem(item.id) }
+                        }
+                        .id(item.id)
+                        .transition(.scale(scale: 0.95).combined(with: .opacity))
+                    }
+
+                    Button {
+                        let id = withAnimation(.snappy) { store.bill.addItem() }
+                        focus = id
+                        withAnimation { proxy.scrollTo(id, anchor: .center) }
+                    } label: {
+                        Label("Ajouter un article", systemImage: "plus")
+                            .font(.subheadline.weight(.bold))
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(style: StrokeStyle(lineWidth: 1.5, dash: [5, 4])).foregroundStyle(Theme.line))
+                    }
+
+                    CheckCard()
+
+                    HStack(spacing: 12) {
+                        MoneyField(title: "Pourboire, frais (€)", placeholder: "0,00", text: $store.bill.extraText)
+                        MoneyField(title: "Total du ticket (€)", placeholder: "Si connu", text: $store.bill.ticketTotalText)
+                    }
+                }
+                .padding(16)
             }
-        }
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("OK") { focus = nil }.fontWeight(.bold)
+            .scrollDismissesKeyboard(.interactively)
+            .safeAreaBar(edge: .bottom) {
+                Dock(label: "Continuer", systemImage: "arrow.right",
+                     disabled: !store.bill.items.contains { !$0.name.trimmed.isEmpty || $0.cents != 0 }) {
+                    focus = nil
+                    store.bill.dropEmptyItems()
+                    if store.bill.items.isEmpty { store.bill.addItem(); return }
+                    store.go(.people)
+                }
             }
         }
     }

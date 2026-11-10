@@ -9,92 +9,91 @@ struct PeopleStepView: View {
 
     var body: some View {
         let people = store.bill.people
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    StepHeader(step: .people, title: "Qui était à table ?", subtitle: "Ajoute chaque personne qui partage l’addition.")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                StepHeader(step: .people, title: "Qui était à table ?", subtitle: "Ajoute chaque personne qui partage l’addition.")
 
-                    HStack(spacing: 8) {
-                        TextField("Prénom", text: $name)
-                            .textInputAutocapitalization(.words)
-                            .autocorrectionDisabled()
-                            .submitLabel(.done)
-                            .focused($focused)
-                            .onSubmit(add)
-                            .padding(.horizontal, 14)
-                            .frame(height: 50)
-                            .background(Theme.card, in: .rect(cornerRadius: 14))
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.line))
-                        Button("Ajouter", action: add)
-                            .font(.subheadline.weight(.bold))
-                            .foregroundStyle(Theme.buttonInk)
-                            .padding(.horizontal, 18)
-                            .frame(height: 50)
-                            .background(Theme.button, in: .rect(cornerRadius: 14))
-                    }
-                    .modifier(Shake(animatableData: CGFloat(shake)))
+                HStack(spacing: 8) {
+                    TextField("Prénom", text: $name)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                        .submitLabel(.done)
+                        .focused($focused)
+                        .onSubmit(add)
+                        .padding(.horizontal, 14)
+                        .frame(height: 50)
+                        .background(Theme.card, in: .rect(cornerRadius: 14))
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.line))
+                    Button("Ajouter", action: add)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Theme.buttonInk)
+                        .padding(.horizontal, 18)
+                        .frame(height: 50)
+                        .background(Theme.button, in: .rect(cornerRadius: 14))
+                }
+                .modifier(Shake(animatableData: CGFloat(shake)))
 
-                    let recent = store.recentNames
-                    if !recent.isEmpty {
-                        ScrollView(.horizontal) {
-                            HStack(spacing: 8) {
-                                Text("Récemment").font(.caption.weight(.semibold)).foregroundStyle(Theme.mute)
-                                ForEach(Array(recent.enumerated()), id: \.element) { i, n in
-                                    Button {
-                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) { _ = store.bill.addPerson(n) }
-                                    } label: {
-                                        HStack(spacing: 6) {
-                                            Avatar(person: Person(id: -1, name: n, color: people.count + i), size: 24)
-                                            Text(n).font(.subheadline.weight(.semibold))
-                                        }
-                                        .padding(.leading, 4).padding(.trailing, 12).padding(.vertical, 4)
-                                        .background(Theme.card, in: .capsule)
-                                        .overlay(Capsule().stroke(Theme.line))
-                                    }
-                                    .foregroundStyle(Theme.ink)
-                                }
-                            }
-                        }
-                        .scrollIndicators(.hidden)
-                    }
-
-                    if people.isEmpty {
-                        VStack(spacing: 10) {
-                            HStack(spacing: -10) {
-                                ForEach(0..<3) { _ in Circle().fill(Theme.sunk).frame(width: 40, height: 40).overlay(Circle().stroke(Theme.bg, lineWidth: 3)) }
-                            }
-                            Text("Personne pour l’instant. Il faut au moins deux personnes.")
-                                .font(.subheadline).foregroundStyle(Theme.mute).multilineTextAlignment(.center)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 28)
-                    }
-
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 10)], spacing: 10) {
-                        ForEach(people) { p in
-                            HStack(spacing: 10) {
-                                Avatar(person: p, size: 40)
-                                Text(p.name).font(.system(size: 16, weight: .semibold)).lineLimit(1)
-                                Spacer(minLength: 0)
+                let recent = store.recentNames
+                if !recent.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack(spacing: 8) {
+                            Text("Récemment").font(.caption.weight(.semibold)).foregroundStyle(Theme.mute)
+                            ForEach(Array(recent.enumerated()), id: \.element) { i, n in
                                 Button {
-                                    withAnimation(.snappy) { store.bill.removePerson(p.id) }
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) { _ = store.bill.addPerson(n) }
                                 } label: {
-                                    Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.mute)
-                                        .frame(width: 28, height: 28)
+                                    HStack(spacing: 6) {
+                                        Avatar(person: Person(id: -1, name: n, color: people.count + i), size: 24)
+                                        Text(n).font(.subheadline.weight(.semibold))
+                                    }
+                                    .padding(.leading, 4).padding(.trailing, 12).padding(.vertical, 4)
+                                    .background(Theme.card, in: .capsule)
+                                    .overlay(Capsule().stroke(Theme.line))
                                 }
-                                .accessibilityLabel("Retirer \(p.name)")
+                                .foregroundStyle(Theme.ink)
                             }
-                            .padding(10)
-                            .background(Theme.card, in: .rect(cornerRadius: 16))
-                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.line))
-                            .transition(.scale(scale: 0.6).combined(with: .opacity))
                         }
+                    }
+                    .scrollIndicators(.hidden)
+                }
+
+                if people.isEmpty {
+                    VStack(spacing: 10) {
+                        HStack(spacing: -10) {
+                            ForEach(0..<3) { _ in Circle().fill(Theme.sunk).frame(width: 40, height: 40).overlay(Circle().stroke(Theme.bg, lineWidth: 3)) }
+                        }
+                        Text("Personne pour l’instant. Il faut au moins deux personnes.")
+                            .font(.subheadline).foregroundStyle(Theme.mute).multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 28)
+                }
+
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 10)], spacing: 10) {
+                    ForEach(people) { p in
+                        HStack(spacing: 10) {
+                            Avatar(person: p, size: 40)
+                            Text(p.name).font(.system(size: 16, weight: .semibold)).lineLimit(1)
+                            Spacer(minLength: 0)
+                            Button {
+                                withAnimation(.snappy) { store.bill.removePerson(p.id) }
+                            } label: {
+                                Image(systemName: "xmark").font(.caption.weight(.bold)).foregroundStyle(Theme.mute)
+                                    .frame(width: 28, height: 28)
+                            }
+                            .accessibilityLabel("Retirer \(p.name)")
+                        }
+                        .padding(10)
+                        .background(Theme.card, in: .rect(cornerRadius: 16))
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.line))
+                        .transition(.scale(scale: 0.6).combined(with: .opacity))
                     }
                 }
-                .padding(16)
             }
-            .scrollDismissesKeyboard(.interactively)
-
+            .padding(16)
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .safeAreaBar(edge: .bottom) {
             Dock(label: people.isEmpty ? "Ajoute les participants" : people.count == 1 ? "Encore une personne" : "Attribuer les articles",
                  systemImage: people.count >= 2 ? "arrow.right" : nil,
                  disabled: people.count < 2) {

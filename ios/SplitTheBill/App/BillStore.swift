@@ -74,7 +74,7 @@ final class BillStore {
         do {
             let text = try await ReceiptOCR.recognize(image)
             bill.rawText = text
-            await analyze(text: text)
+            await analyze(text: text, fromPhoto: true)
         } catch {
             withAnimation { reading = nil }
             show("La lecture a échoué. Reprends une photo plus nette.")
@@ -82,22 +82,40 @@ final class BillStore {
     }
 
     /// Texte → articles. Utilisé après une photo, ou pour un texte collé.
-    func analyze(text: String) async {
+    ///
+    /// La lecture de la web app (`TicketParser`) passe en premier : elle est exacte et prévisible
+    /// sur un texte propre. L'IA ne prend la main que si cette lecture ne trouve rien, ou si,
+    /// sur une photo, ses articles ne retombent pas sur le total du ticket.
+    func analyze(text: String, fromPhoto: Bool = false) async {
         let text = text.trimmed
         guard !text.isEmpty else { show("Colle d’abord le texte du ticket."); return }
         bill.rawText = text
-        withAnimation { reading = .ai(ReceiptAI.statusLabel) }
 
-        var items: [ParsedItem]
-        var total: Int?
-        var engine: ReadingEngine
-        if let ai = await ReceiptAI.extract(from: text) {
-            (items, total, engine) = (ai.items, ai.totalCents, ai.engine)
-            // Le total imprimé est plus fiable lu par la règle que deviné : on garde celui du parseur s'il existe.
-            if let t = TicketParser.parse(text, unitPrices: bill.unitPrices).totalCents { total = t }
+        let classic = TicketParser.parse(text, unitPrices: bill.unitPrices)
+        var items = classic.items
+        var total = classic.totalCents
+        var engine = ReadingEngine.classic
+
+        let printedTotal = classic.totalCents
+        func matchesTotal(_ list: [ParsedItem]) -> Bool {
+            guard let printedTotal, !list.isEmpty else { return false }
+            return list.reduce(0) { $0 + $1.cents } == printedTotal
+        }
+
+        let classicIsEnough = fromPhoto ? matchesTotal(classic.items) : !classic.items.isEmpty
+        if classicIsEnough {
+            withAnimation { reading = .ai("Lecture du ticket") }
         } else {
-            let parsed = TicketParser.parse(text, unitPrices: bill.unitPrices)
-            (items, total, engine) = (parsed.items, parsed.totalCents, .classic)
+            withAnimation { reading = .ai(ReceiptAI.statusLabel) }
+            if let ai = await ReceiptAI.extract(from: text) {
+                // On garde l'IA si elle retombe sur le total, si la lecture classique n'a rien trouvé,
+                // ou si c'est le modèle cloud (plus fiable que les règles sur une photo abîmée).
+                if classic.items.isEmpty || matchesTotal(ai.items) || ai.engine == .privateCloud {
+                    items = ai.items
+                    engine = ai.engine
+                    if total == nil { total = ai.totalCents }
+                }
+            }
         }
 
         withAnimation { reading = .done(items.count) }

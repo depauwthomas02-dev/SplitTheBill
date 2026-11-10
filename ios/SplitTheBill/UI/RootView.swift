@@ -1,27 +1,23 @@
 import SwiftUI
 
 /// Une étape à l'écran, l'action principale collée au pouce (comme la web app).
+/// L'en-tête et la barre du bas flottent en verre au-dessus du contenu, qui défile dessous.
 struct RootView: View {
     @Environment(BillStore.self) private var store
     @State private var confirmReset = false
 
     var body: some View {
         ZStack(alignment: .top) {
-            Theme.bg.ignoresSafeArea()
+            AmbientBackground()
 
-            VStack(spacing: 0) {
-                header
-                ZStack {
-                    stepView
-                        .id(store.bill.step)
-                        .transition(.asymmetric(
-                            insertion: .move(edge: store.forward ? .trailing : .leading).combined(with: .opacity),
-                            removal: .move(edge: store.forward ? .leading : .trailing).combined(with: .opacity)
-                        ))
-                }
+            stepView
+                .id(store.bill.step)
+                .transition(.asymmetric(
+                    insertion: .move(edge: store.forward ? .trailing : .leading).combined(with: .opacity),
+                    removal: .move(edge: store.forward ? .leading : .trailing).combined(with: .opacity)
+                ))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-            }
+                .safeAreaBar(edge: .top) { header }
 
             if let reading = store.reading {
                 ReadingOverlay(state: reading)
@@ -31,10 +27,9 @@ struct RootView: View {
             if let toast = store.toast {
                 Text(toast)
                     .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.buttonInk)
+                    .foregroundStyle(Theme.ink)
                     .padding(.horizontal, 18).padding(.vertical, 12)
-                    .background(Theme.button, in: .capsule)
-                    .shadow(radius: 12, y: 6)
+                    .glassEffect(.regular, in: .capsule)
                     .padding(.top, 64)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .accessibilityAddTraits(.isStaticText)
@@ -57,55 +52,63 @@ struct RootView: View {
         }
     }
 
+    /// Sur l'accueil d'une addition vide, seul le logo est affiché.
+    private var showsProgress: Bool {
+        store.bill.step != .ticket || !store.bill.items.isEmpty
+    }
+
     private var header: some View {
         HStack(spacing: 12) {
-            HStack(spacing: 6) {
-                Image(systemName: "receipt")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Theme.soft)
-                    .frame(width: 30, height: 30)
-                    .background(Theme.bordeaux, in: .rect(cornerRadius: 9))
-                Text("Split\(Text("The").italic().foregroundStyle(Theme.orange))Bill")
-                    .font(.system(size: 17, weight: .heavy))
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("SplitTheBill")
+            Brand()
+            Spacer(minLength: 0)
+            if showsProgress {
+                GlassEffectContainer(spacing: 8) {
+                    HStack(spacing: 8) {
+                        HStack(spacing: 6) {
+                            ForEach(Step.allCases, id: \.self) { s in
+                                let reached = s.rawValue <= store.bill.step.rawValue
+                                Button {
+                                    store.go(s)
+                                } label: {
+                                    Capsule()
+                                        .fill(reached ? Theme.orange : Theme.ink.opacity(0.18))
+                                        .frame(width: s == store.bill.step ? 22 : 8, height: 8)
+                                        .frame(height: 40)
+                                        .contentShape(.rect)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(s == store.bill.step || s.rawValue > store.bill.maxStep.rawValue || !store.bill.canEnter(s))
+                                .accessibilityLabel("Étape \(s.rawValue + 1) : \(s.title)")
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .glassEffect(.regular, in: .capsule)
+                        .animation(.snappy, value: store.bill.step)
 
-            Spacer()
-
-            HStack(spacing: 6) {
-                ForEach(Step.allCases, id: \.self) { s in
-                    let reached = s.rawValue <= store.bill.step.rawValue
-                    Button {
-                        store.go(s)
-                    } label: {
-                        Capsule()
-                            .fill(reached ? Theme.orange : Theme.line)
-                            .frame(width: s == store.bill.step ? 20 : 8, height: 8)
+                        Button {
+                            confirmReset = true
+                        } label: {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 15, weight: .bold))
+                                .foregroundStyle(Theme.ink)
+                                .frame(width: 40, height: 40)
+                                .contentShape(.circle)
+                        }
+                        .buttonStyle(.plain)
+                        .glassEffect(.regular.interactive(), in: .circle)
+                        .accessibilityLabel("Recommencer")
                     }
-                    .disabled(s == store.bill.step || s.rawValue > store.bill.maxStep.rawValue || !store.bill.canEnter(s))
-                    .accessibilityLabel("Étape \(s.rawValue + 1) : \(s.title)")
                 }
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
             }
-            .animation(.snappy, value: store.bill.step)
-
-            Button {
-                confirmReset = true
-            } label: {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.system(size: 16, weight: .bold))
-                    .frame(width: 38, height: 38)
-                    .background(Theme.card, in: .circle)
-                    .overlay(Circle().stroke(Theme.line))
-            }
-            .accessibilityLabel("Recommencer")
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
+        .animation(.snappy, value: showsProgress)
     }
 }
 
-/// Bas d'écran commun : retour + bouton principal.
+/// Barre du bas, en verre : retour + bouton principal.
 struct Dock<Leading: View>: View {
     @Environment(BillStore.self) private var store
     var label: String
@@ -113,39 +116,45 @@ struct Dock<Leading: View>: View {
     var disabled = false
     var action: () -> Void
     @ViewBuilder var leading: () -> Leading
+    @State private var keyboardUp = false
 
     var body: some View {
-        HStack(spacing: 10) {
-            if store.bill.step != .ticket {
-                Button { store.back() } label: {
-                    Image(systemName: "arrow.left")
-                        .font(.system(size: 19, weight: .bold))
-                        .frame(width: 56, height: 56)
-                        .background(Theme.card, in: .rect(cornerRadius: 18))
-                        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.line))
+        GlassEffectContainer(spacing: 10) {
+            HStack(spacing: 10) {
+                if keyboardUp {
+                    // Le pavé numérique n'a pas de touche « OK » : on propose de fermer le clavier ici.
+                    Button {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    } label: {
+                        Image(systemName: "keyboard.chevron.compact.down")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(Theme.ink)
+                            .frame(width: 58, height: 58)
+                            .contentShape(.rect(cornerRadius: 22))
+                    }
+                    .buttonStyle(.plain)
+                    .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 22))
+                    .accessibilityLabel("Fermer le clavier")
+                } else if store.bill.step != .ticket {
+                    DockBackButton()
                 }
-                .accessibilityLabel("Étape précédente")
-            }
-            leading()
-            Button(action: action) {
-                HStack(spacing: 8) {
-                    Text(label).contentTransition(.opacity)
-                    if let systemImage { Image(systemName: systemImage) }
+                leading()
+                Button(action: action) {
+                    DockLabel(text: label, systemImage: systemImage, disabled: disabled)
                 }
-                .font(.system(size: 17, weight: .bold))
-                .frame(maxWidth: .infinity, minHeight: 56)
-                .foregroundStyle(Theme.buttonInk)
-                .background(disabled ? Theme.mute.opacity(0.45) : Theme.button, in: .rect(cornerRadius: 18))
+                .buttonStyle(.plain)
+                .disabled(disabled)
+                .sensoryFeedback(.impact(weight: .light), trigger: label)
             }
-            .disabled(disabled)
-            .sensoryFeedback(.impact(weight: .light), trigger: label)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 10)
+        .padding(.top, 8)
         .padding(.bottom, 8)
-        .background(.bar)
         .animation(.snappy, value: label)
         .animation(.snappy, value: disabled)
+        .animation(.snappy, value: keyboardUp)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in keyboardUp = true }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in keyboardUp = false }
     }
 }
 
@@ -155,26 +164,73 @@ extension Dock where Leading == EmptyView {
     }
 }
 
-/// Titre d'étape : « Étape 2 sur 5 » + grand titre + explication.
+/// Le libellé du bouton principal : verre teinté aux couleurs de l'app, verre neutre s'il est inactif.
+struct DockLabel: View {
+    var text: String
+    var systemImage: String?
+    var disabled = false
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Text(text.uppercased())
+                .font(Theme.display(19))
+                .kerning(0.8)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .contentTransition(.opacity)
+            if let systemImage {
+                Image(systemName: systemImage).font(.system(size: 16, weight: .heavy))
+            }
+        }
+        .padding(.horizontal, 18)
+        .frame(maxWidth: .infinity, minHeight: 58)
+        .foregroundStyle(disabled ? Theme.mute : Theme.buttonInk)
+        .contentShape(.rect(cornerRadius: 22))
+        .glassEffect(disabled ? .regular : .regular.tint(Theme.button).interactive(), in: .rect(cornerRadius: 22))
+    }
+}
+
+struct DockBackButton: View {
+    @Environment(BillStore.self) private var store
+
+    var body: some View {
+        Button { store.back() } label: {
+            Image(systemName: "arrow.left")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(Theme.ink)
+                .frame(width: 58, height: 58)
+                .contentShape(.rect(cornerRadius: 22))
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 22))
+        .accessibilityLabel("Étape précédente")
+    }
+}
+
+/// Titre d'étape : « Étape 2 sur 5 » + grand titre en capitales + explication.
 struct StepHeader: View {
     var step: Step
     var title: String
     var subtitle: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Étape \(step.rawValue + 1) sur 5")
-                .font(.caption.weight(.bold))
-                .textCase(.uppercase)
-                .foregroundStyle(Theme.orange)
-            Text(title)
-                .font(Theme.display(36))
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Étape \(step.rawValue + 1) sur 5".uppercased())
+                .font(Theme.mono(12, weight: .bold))
+                .kerning(1.6)
+                .foregroundStyle(Theme.mute)
+            Text(title.uppercased())
+                .font(Theme.display(44))
+                .lineSpacing(1)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityLabel(title)
                 .accessibilityAddTraits(.isHeader)
             Text(subtitle)
                 .font(.subheadline)
                 .foregroundStyle(Theme.mute)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 6)
     }
 }
 
@@ -184,8 +240,8 @@ struct ReadingOverlay: View {
 
     var body: some View {
         ZStack {
-            Rectangle().fill(.ultraThinMaterial).ignoresSafeArea()
-            VStack(spacing: 18) {
+            Theme.bg.opacity(0.55).ignoresSafeArea()
+            VStack(spacing: 16) {
                 Group {
                     if case .done = state {
                         Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.ok)
@@ -197,14 +253,21 @@ struct ReadingOverlay: View {
                         Image(systemName: "text.viewfinder").symbolEffect(.pulse).foregroundStyle(Theme.orange)
                     }
                 }
-                .font(.system(size: 54))
+                .font(.system(size: 52))
                 .contentTransition(.symbolEffect(.replace))
 
-                Text(title).font(Theme.display(28))
-                Text(detail).font(.subheadline).foregroundStyle(Theme.mute).multilineTextAlignment(.center)
+                Text(title.uppercased())
+                    .font(Theme.display(30))
+                    .multilineTextAlignment(.center)
+                    .accessibilityLabel(title)
+                Text(detail)
+                    .font(.subheadline)
+                    .foregroundStyle(Theme.mute)
+                    .multilineTextAlignment(.center)
             }
-            .padding(32)
-            .card()
+            .padding(.horizontal, 28).padding(.vertical, 32)
+            .frame(maxWidth: 320)
+            .glassEffect(.regular, in: .rect(cornerRadius: 32))
             .padding(32)
         }
         .accessibilityElement(children: .combine)

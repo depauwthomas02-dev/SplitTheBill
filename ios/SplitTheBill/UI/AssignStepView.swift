@@ -10,44 +10,44 @@ struct AssignStepView: View {
         let done = bill.items.count - bill.unassignedCount
         let result = SplitCalculator.compute(bill)
 
-        VStack(spacing: 0) {
-            ScrollView {
-                VStack(spacing: 14) {
-                    StepHeader(step: .assign, title: "Qui a pris quoi ?",
-                               subtitle: "Touche une personne pour lui donner une part, encore pour une part de plus. Le bouton − retire une part.")
+        ScrollView {
+            VStack(spacing: 14) {
+                StepHeader(step: .assign, title: "Qui a pris quoi ?",
+                           subtitle: "Touche une personne pour lui donner une part, encore pour une part de plus. Le bouton − retire une part.")
 
-                    VStack(spacing: 6) {
-                        HStack {
-                            Text("Articles attribués").font(.caption.weight(.semibold)).foregroundStyle(Theme.mute)
-                            Spacer()
-                            Text("\(done) / \(bill.items.count)").font(.caption.weight(.heavy).monospacedDigit())
-                                .contentTransition(.numericText())
-                        }
-                        GeometryReader { g in
-                            Capsule().fill(Theme.line)
-                                .overlay(alignment: .leading) {
-                                    Capsule().fill(done == bill.items.count ? Theme.ok : Theme.orange)
-                                        .frame(width: bill.items.isEmpty ? 0 : g.size.width * CGFloat(done) / CGFloat(bill.items.count))
-                                }
-                        }
-                        .frame(height: 8)
+                VStack(spacing: 6) {
+                    HStack {
+                        Text("Articles attribués").font(.caption.weight(.semibold)).foregroundStyle(Theme.mute)
+                        Spacer()
+                        Text("\(done) / \(bill.items.count)").font(.caption.weight(.heavy).monospacedDigit())
+                            .contentTransition(.numericText())
                     }
-                    .animation(.spring(response: 0.45, dampingFraction: 0.8), value: done)
-
-                    ForEach(bill.items) { item in
-                        AssignCard(item: item)
+                    GeometryReader { g in
+                        Capsule().fill(Theme.line)
+                            .overlay(alignment: .leading) {
+                                Capsule().fill(done == bill.items.count ? Theme.ok : Theme.orange)
+                                    .frame(width: bill.items.isEmpty ? 0 : g.size.width * CGFloat(done) / CGFloat(bill.items.count))
+                            }
                     }
+                    .frame(height: 8)
                 }
-                .padding(16)
+                .animation(.spring(response: 0.45, dampingFraction: 0.8), value: done)
+
+                ForEach(bill.items) { item in
+                    AssignCard(item: item)
+                }
             }
-
-            SumBar(result: result)
-
+            .padding(16)
+        }
+        .safeAreaBar(edge: .bottom) {
             let u = bill.unassignedCount
-            Dock(label: u > 0 ? "Encore \(u) article\(u > 1 ? "s" : "") à attribuer" : "Voir le résultat",
-                 systemImage: u > 0 ? nil : "arrow.right",
-                 disabled: u > 0) {
-                store.go(.result)
+            VStack(spacing: 0) {
+                SumBar(result: result)
+                Dock(label: u > 0 ? "Encore \(u) article\(u > 1 ? "s" : "") à attribuer" : "Voir le résultat",
+                     systemImage: u > 0 ? nil : "arrow.right",
+                     disabled: u > 0) {
+                    store.go(.result)
+                }
             }
         }
         .onAppear { store.bill.dropEmptyItems() }
@@ -190,27 +190,30 @@ private struct SumBar: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            HStack(spacing: 8) {
-                ForEach(store.bill.people) { p in
-                    let v = result.owed[p.id] ?? 0
-                    HStack(spacing: 6) {
-                        Avatar(person: p, size: 26)
-                        Text(Money.eur(v))
-                            .font(.system(size: 14, weight: .bold).monospacedDigit())
-                            .contentTransition(.numericText(value: Double(v)))
+            GlassEffectContainer(spacing: 8) {
+                HStack(spacing: 8) {
+                    ForEach(store.bill.people) { p in
+                        let v = result.owed[p.id] ?? 0
+                        HStack(spacing: 6) {
+                            Avatar(person: p, size: 26)
+                            Text(Money.eur(v))
+                                .font(.system(size: 14, weight: .bold).monospacedDigit())
+                                .foregroundStyle(Theme.ink)
+                                .contentTransition(.numericText(value: Double(v)))
+                        }
+                        .padding(.leading, 5).padding(.trailing, 12).padding(.vertical, 5)
+                        .glassEffect(.regular, in: .capsule)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("\(p.name) : \(Money.eur(v))")
                     }
-                    .padding(.leading, 4).padding(.trailing, 10).padding(.vertical, 4)
-                    .background(Theme.card, in: .capsule)
-                    .overlay(Capsule().stroke(Theme.line))
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel("\(p.name) : \(Money.eur(v))")
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 2)
+                .animation(.snappy, value: result.owed)
             }
-            .padding(.horizontal, 16)
-            .animation(.snappy, value: result.owed)
         }
         .scrollIndicators(.hidden)
-        .padding(.vertical, 8)
-        .background(Theme.bg)
+        .scrollClipDisabled()
+        .padding(.top, 8)
     }
 }
