@@ -67,7 +67,7 @@ enum ReceiptAI {
                 let r = try await session.respond(
                     to: prompt(for: text),
                     generating: AIReceipt.self,
-                    options: GenerationOptions(sampling: .greedy)
+                    options: GenerationOptions(samplingMode: .greedy)
                 )
                 if let e = r.content.extraction(engine: .onDevice) { return e }
             } catch {

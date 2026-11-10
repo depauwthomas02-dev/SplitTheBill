@@ -1,5 +1,5 @@
 import UIKit
-import Vision
+@preconcurrency import Vision
 
 /// Lecture du texte d'un ticket avec Vision, entièrement sur l'iPhone.
 /// Vision rend des blocs de texte séparés (le nom à gauche, le prix à droite) :
@@ -14,19 +14,17 @@ enum ReceiptOCR {
         let orientation = CGImagePropertyOrientation.up
 
         let observations: [VNRecognizedTextObservation] = try await withCheckedThrowingContinuation { cont in
-            let request = VNRecognizeTextRequest { req, error in
-                if let error { cont.resume(throwing: error); return }
-                cont.resume(returning: (req.results as? [VNRecognizedTextObservation]) ?? [])
-            }
-            request.recognitionLevel = .accurate
-            request.recognitionLanguages = ["fr-FR", "en-US"]
-            // La correction linguistique aide pour les noms d'articles ;
-            // `cleanOCR` répare ensuite les erreurs courantes sur les prix.
-            request.usesLanguageCorrection = true
-            request.minimumTextHeight = 0.008
             DispatchQueue.global(qos: .userInitiated).async {
+                let request = VNRecognizeTextRequest()
+                request.recognitionLevel = .accurate
+                request.recognitionLanguages = ["fr-FR", "en-US"]
+                // La correction linguistique aide pour les noms d'articles ;
+                // `cleanOCR` répare ensuite les erreurs courantes sur les prix.
+                request.usesLanguageCorrection = true
+                request.minimumTextHeight = 0.008
                 do {
                     try VNImageRequestHandler(cgImage: cg, orientation: orientation).perform([request])
+                    cont.resume(returning: request.results ?? [])
                 } catch {
                     cont.resume(throwing: error)
                 }
