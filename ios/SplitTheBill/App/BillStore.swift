@@ -103,9 +103,7 @@ final class BillStore {
         }
 
         let classicIsEnough = fromPhoto ? matchesTotal(classic.items) : !classic.items.isEmpty
-        if classicIsEnough {
-            withAnimation { reading = .ai("Lecture du ticket") }
-        } else {
+        if !classicIsEnough {
             withAnimation { reading = .ai(ReceiptAI.statusLabel) }
             if let ai = await ReceiptAI.extract(from: text) {
                 // On garde l'IA si elle retombe sur le total, si la lecture classique n'a rien trouvé,
@@ -118,8 +116,11 @@ final class BillStore {
             }
         }
 
-        withAnimation { reading = .done(items.count) }
-        try? await Task.sleep(for: .milliseconds(900))
+        // Lecture exacte : instantanée, comme sur la web app. Après l'IA : un court « n articles trouvés ».
+        if engine != .classic {
+            withAnimation { reading = .done(items.count) }
+            try? await Task.sleep(for: .milliseconds(450))
+        }
         bill.setItems(items, total: total, engine: engine)
         withAnimation { reading = nil }
         if items.isEmpty { show("Aucun article reconnu. Saisis-les à la main.") }

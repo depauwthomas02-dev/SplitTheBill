@@ -33,7 +33,7 @@ struct TicketStepView: View {
                             Text(hasCamera ? "PRENDRE LE TICKET EN PHOTO" : "CHOISIR UNE PHOTO DU TICKET")
                                 .font(Theme.display(23))
                                 .kerning(0.4)
-                                .lineSpacing(1)
+                                .lineHeight(.multiple(factor: 1.0))
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                             Text("Une photo et c’est lu.")
@@ -174,6 +174,7 @@ struct HeroTicket: View {
 
             Text("L’ADDITION, MÊME POUR LES \(Text("RADINS.").foregroundStyle(Theme.orange))")
                 .font(Theme.display(40))
+                .lineHeight(.multiple(factor: 1.0))
                 .lineSpacing(3)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
