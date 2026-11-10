@@ -23,12 +23,14 @@ Photo ──► Vision (texte, sur l'iPhone) ──► Apple Intelligence ──
 
 ### Activer Private Cloud Compute
 
-Apple réserve le modèle cloud aux apps qui ont l'entitlement géré `com.apple.developer.private-cloud-compute`.
+Apple réserve le modèle cloud aux apps qui ont l'entitlement géré `com.apple.developer.private-cloud-compute`. Sans lui, iOS ferme l'app dès qu'elle appelle le modèle cloud. Le projet est donc livré avec le drapeau `NO_PCC`, qui retire cet appel. L'app lit alors les tickets avec le modèle sur l'iPhone, ce qui marche avec un compte Apple gratuit (Personal Team).
 
-1. Le demander sur le site Apple Developer (Certificates, Identifiers & Profiles → ton App ID → *Capability Requests*).
-2. Une fois accordé, dans Xcode : cible **SplitTheBill** → *Build Settings* → **Code Signing Entitlements** = `SplitTheBill/SplitTheBill.entitlements` (le fichier est déjà prêt).
+Pour activer le cloud :
 
-Sans l'entitlement, l'app fonctionne quand même avec le modèle sur l'iPhone. Le fichier n'est pas branché par défaut, sinon la signature échouerait tant qu'Apple n'a pas accordé l'entitlement.
+1. Il faut un compte Apple Developer Program payant. Demande l'entitlement sur le site Apple Developer (Certificates, Identifiers & Profiles → ton App ID → *Capability Requests*).
+2. Une fois accordé, dans Xcode : cible **SplitTheBill** → *Build Settings* :
+   - **Code Signing Entitlements** = `SplitTheBill/SplitTheBill.entitlements` (le fichier est déjà prêt) ;
+   - **Active Compilation Conditions** : retire `NO_PCC`.
 
 ## Lancer l'app
 

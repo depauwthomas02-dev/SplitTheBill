@@ -9,6 +9,10 @@ import FoundationModels
 /// 1. le modèle serveur **Private Cloud Compute** (iOS 27, plus gros, contexte 32K) ;
 /// 2. le modèle **sur l'iPhone** (iOS 26, iPhone 15 Pro ou plus récent) ;
 /// 3. sinon `nil`, et l'appelant se rabat sur la lecture classique (`TicketParser`).
+///
+/// Sans l'entitlement `com.apple.developer.private-cloud-compute`, iOS tue l'app dès qu'elle
+/// appelle le modèle cloud. Le drapeau de compilation `NO_PCC` (actif par défaut, voir README)
+/// retire donc cet appel tant que le compte développeur n'a pas l'entitlement.
 enum ReceiptAI {
     struct Extraction: Sendable {
         var items: [ParsedItem]
@@ -36,9 +40,11 @@ enum ReceiptAI {
     /// Le statut à afficher sur l'écran d'accueil.
     static var statusLabel: String {
         #if canImport(FoundationModels)
+        #if !NO_PCC
         if #available(iOS 27.0, *), case .available = PrivateCloudComputeLanguageModel().availability {
             return "Apple Intelligence · Private Cloud Compute"
         }
+        #endif
         if case .available = SystemLanguageModel.default.availability {
             return "Apple Intelligence · sur l’iPhone"
         }
@@ -48,6 +54,7 @@ enum ReceiptAI {
 
     static func extract(from text: String) async -> Extraction? {
         #if canImport(FoundationModels)
+        #if !NO_PCC
         if #available(iOS 27.0, *) {
             let pcc = PrivateCloudComputeLanguageModel()
             if case .available = pcc.availability {
@@ -61,6 +68,7 @@ enum ReceiptAI {
                 }
             }
         }
+        #endif
         if case .available = SystemLanguageModel.default.availability {
             do {
                 let session = LanguageModelSession(instructions: instructions)
